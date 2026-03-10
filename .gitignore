@@ -1,0 +1,51 @@
+# ─── Sistema operativo ─────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ─── Editores e IDEs ────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+
+# ─── Docker ─────────────────────────────────────────────────────────────────
+# No ignorar docker-compose.yml (necesario para despliegue)
+# Sí ignorar overrides locales con credenciales reales
+docker-compose.override.yml
+docker-compose.local.yml
+
+# ─── Variables de entorno (¡nunca subir credenciales!) ──────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# ─── Logs ───────────────────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+
+# ─── Dependencias (si se añadieran herramientas de build en el futuro) ──────
+node_modules/
+dist/
+build/
+
+# ─── Archivos temporales ────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+*.cache
+
+# Directorio de preparación del historial git (no subir)
+.gitprep/
