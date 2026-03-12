@@ -1,0 +1,941 @@
+/* ============================================================
+   components.css — Componentes reutilizables de la UI
+   ============================================================
+
+   Aquí están todos los "bloques" que se usan en más de una
+   página: layout, navbar, botones, tarjetas, formularios,
+   modales, badges de tipos... Todo lo que NO es específico
+   de una sola página va aquí.
+
+   Lo separé de variables.css porque si necesito buscar los
+   estilos de un botón sé exactamente dónde mirar.
+   ============================================================ */
+
+
+/* ── LAYOUT ──────────────────────────────────────────────────
+   Clases de estructura. Las grid-X las uso mucho en HTML
+   directamente sin tener que escribir CSS específico cada vez.
+   ─────────────────────────────────────────────────────────── */
+
+/* Contenedor centrado con ancho máximo — lo usan todas las secciones */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Secciones con padding vertical generoso para que respiren */
+.section    { padding: 5rem 0; }
+.section-sm { padding: 3rem 0; }
+
+/* Grids responsivos — el gap por defecto ya está incluido */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+
+/* Flex shortcuts que uso constantemente */
+.flex         { display: flex; }
+.flex-center  { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+
+/* Gaps y márgenes como clases de utilidad — es más rápido que inline style */
+.gap-1 { gap: .5rem; }
+.gap-2 { gap: 1rem; }
+.gap-3 { gap: 1.5rem; }
+.mt-1 { margin-top: .5rem; }  .mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; } .mt-4 { margin-top: 2rem; }
+.mb-1 { margin-bottom: .5rem; }  .mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; } .mb-4 { margin-bottom: 2rem; }
+.w-full    { width: 100%; }
+.text-center { text-align: center; }
+
+
+/* ── NAVBAR ──────────────────────────────────────────────────
+   La barra de navegación es sticky para que siempre esté visible
+   al hacer scroll. El backdrop-filter da el efecto de cristal.
+   ─────────────────────────────────────────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 900;  /* por encima de casi todo, pero por debajo de modales (z-index: 1000) */
+  background: rgba(13, 13, 26, .95);
+  backdrop-filter: blur(12px);  /* efecto glassmorphism */
+  border-bottom: 1px solid var(--border);
+  padding: .75rem 0;
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* El logo con la pokeball animada */
+.nav-logo {
+  font-family: var(--font-pixel);
+  font-size: .75rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  white-space: nowrap;  /* evita que se parta en dos líneas */
+}
+
+.nav-logo .logo-ball {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(180deg, var(--red) 50%, #fff 50%);
+  border-radius: 50%;
+  border: 2px solid #fff;
+  position: relative;
+  overflow: hidden;
+  animation: spin-slow 6s linear infinite;
+  flex-shrink: 0;
+}
+
+/* La línea horizontal del centro de la pokeball */
+.nav-logo .logo-ball::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-top: 2px solid #333;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Los links del menú — centrados en el espacio disponible */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-link {
+  padding: .4rem .9rem;
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  font-size: .875rem;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--text);
+  background: var(--bg-card);
+}
+
+/* Botones de autenticación (login/registro o nombre de usuario) */
+.nav-auth { display: flex; align-items: center; gap: .5rem; }
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .875rem;
+  color: var(--text-dim);
+}
+
+/* El nombre de usuario en amarillo y fuente pixel para que destaque */
+.nav-user strong {
+  color: var(--yellow);
+  font-family: var(--font-pixel);
+  font-size: .6rem;
+}
+
+/* El botón hamburguesa — solo visible en móvil */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: .5rem;
+}
+
+.nav-hamburger span {
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  display: block;
+  transition: var(--transition);
+}
+
+/* Menú móvil desplegable */
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  gap: .25rem;
+  padding: .75rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+
+.mobile-menu.open { display: flex; }
+
+.mobile-menu .nav-link {
+  padding: .6rem .5rem;
+  border-radius: 4px;
+}
+
+
+/* ── BOTONES ─────────────────────────────────────────────────
+   Un sistema de botones con variantes de color y tamaño.
+   La idea es que el botón base define la estructura y luego
+   las variantes solo cambian colores.
+   ─────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .65rem 1.4rem;
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  font-size: .875rem;
+  font-weight: 600;
+  transition: var(--transition);
+  white-space: nowrap;
+  font-family: var(--font-main);
+}
+
+/* Tamaños */
+.btn-sm { padding: .4rem .9rem; font-size: .8rem; }
+.btn-lg { padding: .9rem 2rem; font-size: 1rem; }
+
+/* Rojo — acción principal, lo más importante de la página */
+.btn-primary {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+  box-shadow: 0 0 0 0 var(--red-glow);
+}
+.btn-primary:hover {
+  background: var(--red-dark);
+  border-color: var(--red-dark);
+  box-shadow: 0 0 20px var(--red-glow);
+  transform: translateY(-2px);
+}
+
+/* Azul outline — acción secundaria, como "volver" o "ver más" */
+.btn-secondary {
+  background: transparent;
+  color: var(--blue);
+  border-color: var(--blue);
+}
+.btn-secondary:hover {
+  background: var(--blue-glow);
+  box-shadow: 0 0 20px var(--blue-glow);
+  transform: translateY(-2px);
+}
+
+/* Fantasma — para acciones terciarias o cuando ya hay un botón primario cerca */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-dim);
+  border-color: var(--border);
+}
+.btn-ghost:hover {
+  background: var(--bg-card);
+  color: var(--text);
+  border-color: var(--border-b);
+}
+
+/* Peligro — para eliminar cosas, siempre con confirmación antes */
+.btn-danger {
+  background: transparent;
+  color: var(--red);
+  border-color: var(--red);
+}
+.btn-danger:hover {
+  background: var(--red-glow);
+  box-shadow: 0 0 12px var(--red-glow);
+}
+
+/* Pixel — con efecto 8-bit para botones especiales de la landing */
+.btn-pixel {
+  font-family: var(--font-pixel);
+  font-size: .6rem;
+  image-rendering: pixelated;
+  box-shadow:
+    0 4px 0 0 var(--red-dark),
+    4px 0 0 0 var(--border),
+    -4px 0 0 0 var(--border),
+    0 -4px 0 0 var(--border);
+}
+.btn-pixel:hover {
+  box-shadow: 0 2px 0 0 var(--red-dark);
+  transform: translateY(2px);  /* efecto de "presionar" el botón */
+}
+
+/* Un botón desactivado no debe invitar a interacción */
+.btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+
+/* ── TARJETAS GENÉRICAS ───────────────────────────────────────
+   La base para cualquier contenedor con fondo, borde y sombra.
+   Las tarjetas más específicas (ibermon-card, partida-card)
+   están en sus propios archivos de página.
+   ─────────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+/* El hover levita ligeramente — da sensación de que es clickable */
+.card:hover {
+  border-color: var(--border-b);
+  transform: translateY(-4px);
+}
+
+.card-body   { padding: 1.5rem; }
+.card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+.card-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
+
+
+/* ── TARJETA IBERMON ─────────────────────────────────────────
+   Es el componente más reconocible de la web.
+   La uso en la landing (preview) y en el catálogo completo.
+   ─────────────────────────────────────────────────────────── */
+.ibermon-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Degradado sutil en la parte superior para dar profundidad */
+.ibermon-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(76, 201, 240, .06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.ibermon-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px var(--blue-glow);
+}
+
+.ibermon-card .card-num {
+  font-family: var(--font-pixel);
+  font-size: .55rem;
+  color: var(--text-muted);
+  margin-bottom: .75rem;
+}
+
+/* image-rendering: pixelated preserva el look de los sprites */
+.ibermon-card .card-sprite {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  margin: 0 auto .75rem;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 12px rgba(76, 201, 240, .3));
+  transition: transform .3s ease;
+}
+
+/* El sprite se agranda ligeramente al pasar el ratón */
+.ibermon-card:hover .card-sprite { transform: scale(1.1); }
+
+.ibermon-card .card-name {
+  font-family: var(--font-pixel);
+  font-size: .65rem;
+  color: var(--text);
+  margin-bottom: .75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;  /* si el nombre es largo, muestra "..."  */
+}
+
+.ibermon-card .card-types {
+  display: flex;
+  gap: .35rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+
+/* ── BADGES DE TIPO ──────────────────────────────────────────
+   Cada tipo tiene su color específico (como en los juegos).
+   La clase base .badge-tipo define la forma, las subclases el color.
+   ─────────────────────────────────────────────────────────── */
+.badge-tipo {
+  display: inline-block;
+  padding: .2rem .6rem;
+  border-radius: 99px;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+/* Los colores están basados en los tipos del juego original */
+.tipo-Fuego              { background: #ff6b35; color: #fff; }
+.tipo-Agua               { background: #4cc9f0; color: #000; }
+.tipo-Planta             { background: #06d6a0; color: #000; }
+.tipo-Electrico,
+.tipo-Eléctrico          { background: #f9c74f; color: #000; }
+.tipo-Normal             { background: #8d99ae; color: #fff; }
+.tipo-Psiquico,
+.tipo-Psíquico           { background: #e040fb; color: #fff; }
+.tipo-Roca               { background: #b5a642; color: #fff; }
+.tipo-Tierra             { background: #d4a574; color: #000; }
+.tipo-Hielo              { background: #a8dadc; color: #000; }
+.tipo-Siniestro          { background: #4a4e69; color: #fff; }
+.tipo-Volador            { background: #90e0ef; color: #000; }
+.tipo-Veneno             { background: #9b59b6; color: #fff; }
+.tipo-Dragon,
+.tipo-Dragón             { background: #6a0572; color: #fff; }
+.tipo-Acero              { background: #95a5a6; color: #000; }
+.tipo-Bicho              { background: #8bc34a; color: #000; }
+.tipo-Lucha              { background: #e07f39; color: #fff; }
+.tipo-Fantasma           { background: #6c5bb6; color: #fff; }
+.tipo-default            { background: #555;    color: #fff; }
+
+
+/* ── BARRAS DE ESTADÍSTICAS ──────────────────────────────────
+   Las barras de stats del modal de Ibermon y del chatbot.
+   El color cambia según el valor (rojo → amarillo → verde → azul).
+   La animación está en JS: data-target define el % final.
+   ─────────────────────────────────────────────────────────── */
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .4rem;
+}
+
+.stat-label {
+  font-family: var(--font-pixel);
+  font-size: .5rem;
+  color: var(--text-dim);
+  font-weight: 600;
+  min-width: 80px;
+  text-align: right;
+}
+
+.stat-val {
+  font-size: .8rem;
+  font-weight: 700;
+  min-width: 32px;
+  text-align: right;
+  color: var(--text);
+}
+
+.stat-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-deep);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* La barra empieza en 0% y JS la anima hasta data-target con transition */
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease-out;
+  width: 0%;
+}
+
+.stat-bar-fill.low   { background: var(--red); }
+.stat-bar-fill.mid   { background: var(--yellow); }
+.stat-bar-fill.high  { background: var(--green); }
+.stat-bar-fill.vhigh { background: var(--blue); }
+
+
+/* ── PESTAÑAS (TABS) ─────────────────────────────────────────
+   Las uso en el catálogo para cambiar entre secciones.
+   El contenedor tiene fondo oscuro y los botones se destacan
+   cuando están activos.
+   ─────────────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: .25rem;
+  background: var(--bg-deep);
+  padding: .25rem;
+  border-radius: var(--radius);
+  width: fit-content;
+}
+
+.tab-btn {
+  padding: .5rem 1.25rem;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  border-radius: calc(var(--radius) - 2px);
+  font-weight: 600;
+  font-size: .875rem;
+  transition: var(--transition);
+}
+
+.tab-btn.active,
+.tab-btn:hover { background: var(--bg-card); color: var(--text); }
+.tab-btn.active { color: var(--blue); }
+
+.tab-content        { display: none; }
+.tab-content.active { display: block; }
+
+
+/* ── FORMULARIOS ─────────────────────────────────────────────
+   Los estilos de login y registro los pongo aquí porque los
+   formularios son un componente genérico. Si luego añado un
+   formulario de contacto, estos estilos ya le van bien.
+   ─────────────────────────────────────────────────────────── */
+.form-group { margin-bottom: 1.25rem; }
+
+.form-label {
+  display: block;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: .4rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: .7rem 1rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: .9rem;
+  transition: var(--transition);
+}
+
+/* Al enfocar un campo, el borde se vuelve azul y aparece un halo */
+.form-control:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+
+.form-control::placeholder { color: var(--text-muted); }
+
+.form-error { font-size: .8rem; color: var(--red);        margin-top: .35rem; }
+.form-hint  { font-size: .8rem; color: var(--text-muted); margin-top: .35rem; }
+
+
+/* ── ALERTAS / MENSAJES ──────────────────────────────────────
+   Para mostrar errores, éxitos e información en los formularios.
+   Uso colores semánticos (rojo=error, verde=ok, azul=info).
+   ─────────────────────────────────────────────────────────── */
+.alert {
+  padding: .75rem 1rem;
+  border-radius: var(--radius);
+  font-size: .875rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+}
+
+.alert-error   { background: rgba(230, 57, 70, .12); border-color: var(--red);   color: var(--red); }
+.alert-success { background: rgba(6, 214, 160, .12); border-color: var(--green); color: var(--green); }
+.alert-info    { background: var(--blue-glow);       border-color: var(--blue);  color: var(--blue); }
+
+
+/* ── MODAL ───────────────────────────────────────────────────
+   Para el modal de detalle de Ibermon y el de confirmación
+   de borrado. El overlay oscurece el fondo con blur.
+   ─────────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;  /* lo más alto — siempre encima de todo */
+  background: rgba(6, 6, 16, .85);
+  backdrop-filter: blur(6px);
+  display: none;  /* oculto por defecto, JS añade .open */
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-b);
+  border-radius: var(--radius-lg);
+  max-width: 640px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .7), 0 0 40px var(--blue-glow);
+  animation: modal-in .25s ease;  /* aparece con una pequeña animación */
+}
+
+/* Sticky para que el título siempre sea visible al hacer scroll dentro del modal */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 1;
+}
+
+.modal-title { font-family: var(--font-pixel); font-size: .75rem; color: var(--text); }
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: .25rem;
+  transition: var(--transition);
+}
+
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 1.5rem; }
+
+
+/* ── VISOR JSON ──────────────────────────────────────────────
+   El modo "API" del catálogo muestra las respuestas JSON
+   con syntax highlighting. Imité el estilo de herramientas
+   como Postman o Swagger para que resulte familiar.
+   ─────────────────────────────────────────────────────────── */
+.json-panel {
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.json-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .6rem 1rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  font-size: .75rem;
+  color: var(--text-dim);
+}
+
+.json-bar .status { font-family: monospace; font-size: .72rem; }
+.status-200 { color: var(--green); }
+.status-err { color: var(--red); }
+
+.json-body {
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+  font-size: .82rem;
+  line-height: 1.7;
+  max-height: 500px;
+  overflow-y: auto;
+  color: var(--text-dim);
+}
+
+/* Colores del syntax highlight — los mismos que usan editores de código */
+.json-key  { color: var(--blue); }    /* nombres de campo */
+.json-str  { color: var(--green); }   /* strings */
+.json-num  { color: var(--yellow); }  /* números */
+.json-bool { color: var(--red); }     /* true/false */
+.json-null { color: var(--text-muted); }  /* null */
+
+
+/* ── LISTA DE ENDPOINTS ───────────────────────────────────────
+   El sidebar del modo API del catálogo. Cada elemento muestra
+   el método HTTP y la ruta del endpoint.
+   ─────────────────────────────────────────────────────────── */
+.endpoint-list { display: flex; flex-direction: column; gap: .25rem; }
+
+.endpoint-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem .85rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.endpoint-item:hover   { background: var(--bg-card); }
+.endpoint-item.active  { background: var(--bg-card); border-color: var(--blue); }
+
+/* El badge "GET" — fondo verde como en Swagger */
+.endpoint-method {
+  font-family: var(--font-pixel);
+  font-size: .48rem;
+  padding: .2rem .4rem;
+  border-radius: 3px;
+  background: var(--green);
+  color: #000;
+  flex-shrink: 0;
+}
+
+.endpoint-path {
+  font-family: monospace;
+  font-size: .8rem;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* ── BUSCADOR ────────────────────────────────────────────────
+   La barra de búsqueda del catálogo y el visor de API.
+   ─────────────────────────────────────────────────────────── */
+.search-bar {
+  display: flex;
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: .65rem 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: .9rem;
+}
+
+.search-input:focus { outline: none; border-color: var(--blue); }
+
+.filter-btns { display: flex; gap: .35rem; flex-wrap: wrap; }
+
+.filter-btn {
+  padding: .35rem .75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--text-dim);
+  font-size: .8rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.filter-btn:hover  { border-color: var(--border-b); color: var(--text); }
+.filter-btn.active { background: var(--blue-glow); border-color: var(--blue); color: var(--blue); }
+
+
+/* ── SPINNER Y ESTADOS DE CARGA ──────────────────────────────
+   Para mostrar mientras se espera la respuesta de la API.
+   El empty-state es para cuando no hay resultados.
+   ─────────────────────────────────────────────────────────── */
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin: 0 auto;
+}
+
+.loading-state {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.loading-state .spinner { margin-bottom: 1rem; }
+
+.empty-state { padding: 4rem; text-align: center; color: var(--text-muted); }
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+
+/* ── CABECERAS DE SECCIÓN ────────────────────────────────────
+   Los títulos con el pequeño texto de etiqueta encima.
+   ─────────────────────────────────────────────────────────── */
+.section-title {
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: .5rem;
+}
+
+.section-sub { font-size: 1rem; color: var(--text-dim); max-width: 560px; }
+
+/* La etiqueta pequeña en rojo sobre el título principal */
+.section-label {
+  font-family: var(--font-pixel);
+  font-size: .55rem;
+  color: var(--red);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: .5rem;
+  display: block;
+}
+
+/* El divisor rojo→azul debajo de los títulos de sección */
+.divider {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--blue));
+  border-radius: 2px;
+  margin: .75rem 0 1.5rem;
+}
+
+
+/* ── CABECERA DE PÁGINA INTERIOR ─────────────────────────────
+   El banner oscuro con el título que aparece en catálogo,
+   dashboard y descarga (no en la landing, que tiene su propio hero).
+   ─────────────────────────────────────────────────────────── */
+.page-header {
+  background: linear-gradient(180deg, var(--bg-deep), var(--bg-primary));
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header-inner { display: flex; flex-direction: column; gap: .25rem; }
+
+.page-subtitle { font-size: 1rem; color: var(--text-dim); }
+
+
+/* ── BADGE DE MEDALLA ────────────────────────────────────────
+   Para las medallas ganadas en las partidas.
+   ─────────────────────────────────────────────────────────── */
+.medal { display: inline-flex; align-items: center; gap: .3rem; }
+.medal-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); }
+
+
+/* ── FOOTER ──────────────────────────────────────────────────
+   El pie de página con tres columnas: brand + dos de links.
+   Lo pongo en components porque lo comparten todas las páginas.
+   ─────────────────────────────────────────────────────────── */
+.footer {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 0;
+  margin-top: auto;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-brand { max-width: 280px; }
+.footer-logo  { font-family: var(--font-pixel); font-size: .75rem; color: var(--text); margin-bottom: .75rem; }
+.footer-desc  { font-size: .875rem; color: var(--text-muted); line-height: 1.6; }
+
+.footer-col-title {
+  font-family: var(--font-pixel);
+  font-size: .55rem;
+  color: var(--text-dim);
+  margin-bottom: .75rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.footer-links  { display: flex; flex-direction: column; gap: .35rem; }
+.footer-link   { font-size: .875rem; color: var(--text-muted); transition: var(--transition); }
+.footer-link:hover { color: var(--text); }
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: .8rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+
+/* ── ANIMACIONES ─────────────────────────────────────────────
+   Las pongo al final de components.css porque se usan en
+   múltiples componentes de arriba. Si las pusiera en el
+   medio interrumpirían la lectura.
+   ─────────────────────────────────────────────────────────── */
+@keyframes spin       { to { transform: rotate(360deg); } }
+@keyframes spin-slow  { to { transform: rotate(360deg); } }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 4px 20px var(--red-glow); }
+  50%       { box-shadow: 0 4px 32px var(--red-glow), 0 0 0 8px rgba(230, 57, 70, .1); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(.95) translateY(-12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Clase de animación para los feature cards de la landing */
+.animate-fade-up { animation: fade-up .6s ease both; }
+
+
+/* ── RESPONSIVE ──────────────────────────────────────────────
+   Breakpoints:
+   - 1024px: tablets grandes (iPad landscape)
+   - 768px:  tablets pequeñas y móvil grande
+   - 480px:  móvil pequeño
+   ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* El menú desktop se oculta y aparece el hamburguesa */
+  .nav-links     { display: none; }
+  .nav-hamburger { display: flex; }
+
+  /* Los grids de múltiples columnas se colapsan a una sola */
+  .grid-2,
+  .grid-3,
+  .grid-4 { grid-template-columns: 1fr; }
+
+  .section { padding: 3rem 0; }
+
+  .modal-box { margin: .5rem; max-height: 95vh; }
+  .detail-grid { grid-template-columns: 1fr 1fr; }
+
+  .footer-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1024px) {
+  .footer-grid  { grid-template-columns: 1fr 1fr; }
+  .footer-brand { grid-column: 1/-1; }
+}

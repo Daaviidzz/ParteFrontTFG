@@ -1,0 +1,10 @@
+/* ============================================================
+   main.css — Punto de entrada del CSS
+   ============================================================
+
+   Este archivo NO tiene estilos propios. Solo importa los demás
+   archivos en el orden correcto.
+   ============================================================ */
+
+@import './variables.css';
+@import './components.css';
