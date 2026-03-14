@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ibermon — RPG Ibérico</title>
+
+  <!--
+    main.css importa todos los CSS del proyecto en el orden correcto.
+    Así solo necesito un <link> aquí en vez de 7.
+  -->
+  <link rel="stylesheet" href="styles/main.css">
+
+  <!-- Favicon SVG inline para no necesitar un archivo externo -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%23e63946'/><text x='16' y='22' text-anchor='middle' font-size='16'>⬡</text></svg>">
+</head>
+<body>
+
+<!-- nav.js inyecta aquí el navbar completo al cargar la página -->
+<div id="navbar"></div>
+
+
+<!-- ═══════════════════════ HERO ═══════════════════════
+     La primera sección que se ve. Ocupa toda la pantalla.
+     El contenido visual (pokeball) es decorativo, el texto
+     y los botones son lo importante.
+     ═══════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <!-- Pokeball decorativa de fondo — aria-hidden para que los lectores de pantalla la ignoren -->
+  <div class="hero-visual" aria-hidden="true">
+    <div style="position:relative;width:min(460px,45vw);height:min(460px,45vw)">
+      <div style="position:absolute;inset:0;border-radius:50%;border:2px solid var(--red);opacity:.1;animation:spin-slow 30s linear infinite"></div>
+      <div style="position:absolute;inset:20px;border-radius:50%;border:2px solid var(--blue);opacity:.08;animation:spin-slow 20s linear reverse infinite"></div>
+      <div style="position:absolute;inset:60px;border-radius:50%;border:1px solid var(--yellow);opacity:.06;animation:spin-slow 15s linear infinite"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+        <div style="width:min(200px,22vw);height:min(200px,22vw);border-radius:50%;
+          background:linear-gradient(180deg,var(--red) 50%,#fff 50%);
+          border:4px solid rgba(255,255,255,.15);opacity:.07;
+          animation:spin-slow 8s linear infinite">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero-content">
+      <span class="hero-eyebrow">✦ Proyecto TFG — RPG 2D</span>
+      <h1 class="hero-title">
+        El RPG ibérico<br>que estabas<br>
+        <span class="accent">esperando</span>
+      </h1>
+      <p class="hero-desc">
+        Explora la Península Ibérica, captura Ibermon únicos, enfréntate a entrenadores
+        y sincroniza tu progreso en la nube.
+      </p>
+      <div class="hero-cta">
+        <a href="catalogo.html" class="btn btn-primary btn-lg btn-pixel">▶ Explorar Catálogo</a>
+        <a href="descarga.html" class="btn btn-ghost btn-lg">⬇ Descargar Juego</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════ STATS BANNER ═══════════════════════
+     Cuatro datos clave del proyecto en una franja horizontal.
+     ═══════════════════════════════════════════════════════════ -->
+<section style="background:var(--bg-surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem 0">
+  <div class="container">
+    <div class="grid-4" style="text-align:center;gap:1rem">
+      <div>
+        <div style="font-family:var(--font-pixel);font-size:1.25rem;color:var(--red);margin-bottom:.25rem">2D</div>
+        <div style="font-size:.85rem;color:var(--text-dim)">RPG Unity 6</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-pixel);font-size:1.25rem;color:var(--blue);margin-bottom:.25rem">REST</div>
+        <div style="font-size:.85rem;color:var(--text-dim)">API FastAPI</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-pixel);font-size:1.25rem;color:var(--yellow);margin-bottom:.25rem">JWT</div>
+        <div style="font-size:.85rem;color:var(--text-dim)">Auth segura</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-pixel);font-size:1.25rem;color:var(--green);margin-bottom:.25rem">PC+</div>
+        <div style="font-size:.85rem;color:var(--text-dim)">PC & Móvil</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════ FEATURES ═══════════════════════
+     Las 6 tarjetas que explican las características del juego.
+     Las clases animate-fade-up les dan la animación de entrada.
+     ══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span class="section-label">El Universo Ibermon</span>
+      <h2 class="section-title" style="font-size:1.25rem">Todo lo que necesitas saber</h2>
+      <div class="divider" style="margin:1rem auto 0"></div>
+    </div>
+    <div class="grid-3" style="margin-top:2.5rem">
+      <div class="feature-card animate-fade-up">
+        <div class="feature-icon" style="color:var(--red)">⚔️</div>
+        <div class="feature-title">Sistema de Combate</div>
+        <p class="feature-desc">Batallas por turnos con sistema de prioridad, tipos, efectividad y estados alterados. Fórmula de daño precisa con multiplicadores de crítico y aleatoriedad.</p>
+      </div>
+      <div class="feature-card animate-fade-up" style="animation-delay:.1s">
+        <div class="feature-icon" style="color:var(--blue)">⚾</div>
+        <div class="feature-title">Captura de Ibermon</div>
+        <p class="feature-desc">Captura Ibermon salvajes con distintos tipos de Iberballs y añádelos a tu equipo. Cada captura se sincroniza automáticamente con tu cuenta en la nube.</p>
+      </div>
+      <div class="feature-card animate-fade-up" style="animation-delay:.2s">
+        <div class="feature-icon" style="color:var(--yellow)">☁️</div>
+        <div class="feature-title">Guardado en la Nube</div>
+        <p class="feature-desc">Tu progreso se guarda en tiempo real a través de la API REST. Accede a tus partidas desde esta web y lleva el control de tu aventura.</p>
+      </div>
+      <div class="feature-card animate-fade-up" style="animation-delay:.3s">
+        <div class="feature-icon" style="color:var(--green)">🗺️</div>
+        <div class="feature-title">Mundo Abierto Ibérico</div>
+        <p class="feature-desc">Explora pueblos y regiones inspiradas en la Península Ibérica. Cada zona tiene Ibermon únicos y entrenadores con distintos estilos de combate.</p>
+      </div>
+      <div class="feature-card animate-fade-up" style="animation-delay:.4s">
+        <div class="feature-icon" style="color:var(--purple)">📱</div>
+        <div class="feature-title">PC y Móvil</div>
+        <p class="feature-desc">Compatible con teclado y joystick virtual táctil. Juega en PC o en dispositivos móviles con la misma experiencia.</p>
+      </div>
+      <div class="feature-card animate-fade-up" style="animation-delay:.5s">
+        <div class="feature-icon" style="color:var(--blue)">🔌</div>
+        <div class="feature-title">API Pública</div>
+        <p class="feature-desc">Consulta el catálogo completo de Ibermon, movimientos e ítems a través de la API REST pública. Sin necesidad de cuenta.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════ PREVIEW DEL CATÁLOGO ═══════════════════════
+     Los primeros 8 Ibermon cargados desde la API.
+     index.js se encarga de llenar el grid con los datos reales.
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section" style="background:var(--bg-surface);border-top:1px solid var(--border)">
+  <div class="container">
+    <div class="flex-between mb-4" style="flex-wrap:wrap;gap:1rem">
+      <div>
+        <span class="section-label">Catálogo Iberdex</span>
+        <h2 class="section-title" style="font-size:1.25rem">Ibermon más recientes</h2>
+        <div class="divider"></div>
+      </div>
+      <a href="catalogo.html" class="btn btn-ghost">Ver todos →</a>
+    </div>
+    <!-- El spinner es el placeholder mientras index.js carga los datos -->
+    <div class="ibermon-grid" id="heroIbermonGrid" style="max-width:100%">
+      <div class="loading-state" style="grid-column:1/-1"><div class="spinner"></div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════ CTA REGISTRO ═══════════════════════
+     Invitación a crear una cuenta para ver el dashboard.
+     ════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="card card-body text-center" style="max-width:640px;margin:0 auto;
+      background:linear-gradient(135deg,var(--bg-surface),var(--bg-card));
+      border-color:var(--border-b);
+      box-shadow: 0 0 40px var(--blue-glow)">
+      <div style="font-size:2.5rem;margin-bottom:1rem">🎮</div>
+      <h2 style="font-family:var(--font-pixel);font-size:.85rem;color:var(--text);margin-bottom:.75rem">
+        ¿Listo para tu aventura?
+      </h2>
+      <p style="color:var(--text-dim);margin-bottom:1.75rem;line-height:1.7">
+        Regístrate gratis para acceder a tu dashboard de partidas y seguir tu progreso en tiempo real.
+      </p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <a href="registro.html" class="btn btn-primary btn-lg">Crear cuenta gratis</a>
+        <a href="login.html"    class="btn btn-ghost btn-lg">Ya tengo cuenta</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- nav.js inyecta aquí el footer -->
+<div id="footer"></div>
+
+
+<!--
+  Orden de carga de scripts — IMPORTANTE:
+  1. config.js   → CONFIG, TIPOS y helpers (lo necesitan todos los demás)
+  2. api.js      → apiFetch, AuthAPI, CatalogAPI, PartidaAPI
+  3. auth.js     → Auth object (lo usa nav.js)
+  4. nav.js      → navbar y footer (necesita Auth y CONFIG)
+  6. index.js    → lógica específica de esta página (necesita CatalogAPI)
+-->
+<script src="scripts/modules/config.js"></script>
+<script src="scripts/api/api.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/nav.js"></script>
+<script src="scripts/pages/index.js"></script>
+
+</body>
+</html>

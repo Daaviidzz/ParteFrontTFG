@@ -1,0 +1,184 @@
+/* ============================================================
+   pages/index.css — Estilos específicos de la landing (index.html)
+   ============================================================
+
+   Solo pongo aquí lo que es exclusivo de la página principal:
+   el hero animado, los feature cards y nada más.
+   El resto de componentes que usa la landing (botones, navbar,
+   sección de catálogo preview) ya vienen de components.css.
+   ============================================================ */
+
+
+/* ── SECCIÓN HERO ────────────────────────────────────────────
+   La primera sección que se ve al entrar. Ocupa toda la pantalla
+   de altura para dar una primera impresión impactante.
+   ─────────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 60px);  /* 60px es la altura del navbar */
+  display: flex;
+  align-items: center;
+}
+
+/* El fondo con los degradados radiales — da la sensación de "aura" */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 50%, rgba(230, 57, 70, .08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 30%, rgba(76, 201, 240, .06) 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+}
+
+/* La cuadrícula de fondo tipo "tron" — da el look sci-fi */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: .25;
+}
+
+/* El contenido del hero necesita z-index para estar por encima del fondo */
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+}
+
+/* Pequeña etiqueta sobre el título principal */
+.hero-eyebrow {
+  font-family: var(--font-pixel);
+  font-size: .55rem;
+  color: var(--red);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: block;
+  animation: fade-up .6s ease both;
+}
+
+/* El título principal con tamaño fluido para adaptarse a cualquier pantalla */
+.hero-title {
+  font-family: var(--font-pixel);
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  line-height: 1.4;
+  margin-bottom: 1.25rem;
+  animation: fade-up .7s .1s ease both;  /* delay para que aparezca después del eyebrow */
+}
+
+/* La palabra resaltada en rojo con resplandor */
+.hero-title .accent {
+  color: var(--red);
+  text-shadow: 0 0 40px var(--red-glow);
+}
+
+.hero-desc {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  max-width: 480px;
+  margin-bottom: 2rem;
+  line-height: 1.7;
+  animation: fade-up .7s .2s ease both;
+}
+
+/* Los botones CTA también aparecen con delay escalonado */
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  animation: fade-up .7s .3s ease both;
+}
+
+/* El elemento visual (pokeball) a la derecha — decorativo, sin funcionalidad */
+.hero-visual {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;  /* no interfiere con los clics */
+}
+
+.hero-pokeball {
+  width: min(400px, 45vw);
+  height: min(400px, 45vw);
+  position: relative;
+  opacity: .12;
+  animation: spin-slow 20s linear infinite;
+}
+
+.hero-pokeball::before,
+.hero-pokeball::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 4px solid var(--red);
+}
+
+.hero-pokeball::after {
+  border-color: var(--blue);
+  transform: scale(.7) rotate(45deg);
+}
+
+
+/* ── FEATURE CARDS ───────────────────────────────────────────
+   Las 6 tarjetas de características de la landing.
+   El ::before crea el borde superior de color que aparece en hover.
+   ─────────────────────────────────────────────────────────── */
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+/* El borde coloreado empieza invisible y aparece en hover */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--blue));
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.feature-card:hover::before { opacity: 1; }
+.feature-card:hover          { border-color: var(--border-b); transform: translateY(-4px); }
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 8px currentColor);  /* el icono brilla con su propio color */
+}
+
+.feature-title { font-family: var(--font-pixel); font-size: .65rem; color: var(--text); margin-bottom: .75rem; }
+.feature-desc  { font-size: .9rem; color: var(--text-dim); line-height: 1.6; }
+
+
+/* ── Responsive de la landing ────────────────────────────────
+   En móvil el hero se hace más pequeño y el visual decorativo
+   desaparece para no tapar el texto.
+   ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hero        { min-height: auto; padding: 4rem 0 3rem; }
+  .hero-visual { display: none; }
+}
+
+@media (max-width: 480px) {
+  .hero-title { font-size: 1.25rem; }
+}
