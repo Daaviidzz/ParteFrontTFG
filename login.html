@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión — Ibermon</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+
+<!-- El min-height centra el formulario verticalmente en la pantalla -->
+<main style="min-height:calc(100vh - 120px);display:flex;align-items:center;justify-content:center;padding:2rem 1rem">
+
+  <!-- Degradados decorativos de fondo — no tienen función, solo dan ambiente -->
+  <div style="position:fixed;inset:0;z-index:0;pointer-events:none">
+    <div style="position:absolute;top:20%;left:10%;width:300px;height:300px;
+      background:radial-gradient(circle,rgba(230,57,70,.06),transparent 70%);border-radius:50%"></div>
+    <div style="position:absolute;bottom:20%;right:10%;width:400px;height:400px;
+      background:radial-gradient(circle,rgba(76,201,240,.05),transparent 70%);border-radius:50%"></div>
+  </div>
+
+  <!-- z-index:1 para que el formulario quede por encima del fondo decorativo -->
+  <div style="position:relative;z-index:1;width:100%;max-width:420px">
+
+    <!-- Logo y subtítulo encima del formulario -->
+    <div class="text-center mb-4">
+      <div style="font-family:var(--font-pixel);font-size:.9rem;color:var(--text);margin-bottom:.35rem">
+        ⬡ IBERMON
+      </div>
+      <div style="font-size:.9rem;color:var(--text-dim)">Accede a tu cuenta de entrenador</div>
+    </div>
+
+    <!-- La tarjeta del formulario -->
+    <div class="card card-body" style="border-color:var(--border-b);box-shadow:0 0 40px var(--blue-glow)">
+      <h1 style="font-family:var(--font-pixel);font-size:.75rem;color:var(--text);margin-bottom:1.75rem;text-align:center">
+        Iniciar Sesión
+      </h1>
+
+      <!-- El alert de error está oculto por defecto.
+           auth.js lo muestra/oculta según si tiene texto. -->
+      <div id="loginError" class="alert alert-error" style="display:none"></div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="username">Usuario</label>
+          <input type="text" id="username" name="username"
+            class="form-control" placeholder="Tu nombre de entrenador"
+            required autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Contraseña</label>
+          <input type="password" id="password" name="password"
+            class="form-control" placeholder="••••••••"
+            required autocomplete="current-password" />
+        </div>
+        <button type="submit" id="loginBtn" class="btn btn-primary w-full mt-2"
+                style="font-family:var(--font-pixel);font-size:.6rem">
+          ▶ Iniciar Sesión
+        </button>
+      </form>
+
+      <div style="text-align:center;margin-top:1.5rem;font-size:.875rem;color:var(--text-muted)">
+        ¿Sin cuenta?
+        <a href="registro.html" style="color:var(--blue);font-weight:600">Regístrate gratis</a>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:1rem">
+      <a href="catalogo.html" style="font-size:.82rem;color:var(--text-muted)">
+        ← Volver al catálogo público
+      </a>
+    </div>
+  </div>
+</main>
+
+<div id="footer"></div>
+
+<script src="scripts/modules/config.js"></script>
+<script src="scripts/api/api.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/nav.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // initLoginForm() está en auth.js — maneja el submit del formulario
+    initLoginForm();
+    // Oculto los alerts al inicio y los muestro solo cuando tienen texto
+    initAlertToggle('loginError');
+  });
+</script>
+</body>
+</html>
