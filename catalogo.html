@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo — Ibermon</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+
+<!-- ═══ CABECERA DE PÁGINA ═══ -->
+<div class="page-header">
+  <div class="container">
+    <div class="page-header-inner">
+      <span class="section-label">Datos Públicos</span>
+      <h1 class="section-title" style="font-size:1.1rem">Catálogo Iberdex</h1>
+      <p class="page-subtitle">Explora todos los Ibermon, movimientos, ítems y logros del juego.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ BARRA DE CONTROLES (sticky) ═══
+     La pongo sticky para que las pestañas siempre sean accesibles
+     aunque el usuario haga scroll hacia abajo en el catálogo.
+     top:60px deja espacio para el navbar que también es sticky.
+     ══════════════════════════════════ -->
+<div style="background:var(--bg-surface);border-bottom:1px solid var(--border);padding:1rem 0;position:sticky;top:60px;z-index:500">
+  <div class="container">
+    <div class="flex-between gap-2" style="flex-wrap:wrap">
+
+      <!-- Pestañas de sección — catalog.js las conecta con data-section -->
+      <div class="tabs">
+        <button class="tab-btn active" data-section="ibermon">⬡ Ibermon</button>
+        <button class="tab-btn" data-section="movimientos">⚡ Movimientos</button>
+        <button class="tab-btn" data-section="items">🎒 Ítems</button>
+        <button class="tab-btn" data-section="logros">🏆 Logros</button>
+      </div>
+
+      <!-- Pestañas de modo de vista — catalog.js las conecta con data-mode -->
+      <div class="tabs">
+        <button class="tab-btn active" data-mode="normal" title="Vista en tarjetas">🃏 Normal</button>
+        <button class="tab-btn" data-mode="api"    title="Vista formato API">⌨ API</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ CONTENIDO PRINCIPAL ═══ -->
+<main class="section-sm">
+  <div class="container">
+
+    <!-- Buscador — solo visible en modo normal (catalog.js lo oculta en modo API) -->
+    <div id="searchWrap" class="search-bar" style="margin-bottom:1.5rem">
+      <input type="text" id="catalogSearch" class="search-input" placeholder="Buscar por nombre..." />
+    </div>
+
+    <!-- Vista normal: tarjetas de Ibermon/movimientos/ítems/logros -->
+    <div id="normalView">
+      <div class="loading-state"><div class="spinner"></div><div>Cargando...</div></div>
+    </div>
+
+    <!-- Vista API: el layout de dos columnas con endpoints y JSON viewer -->
+    <div id="apiView" style="display:none"></div>
+
+  </div>
+</main>
+
+
+<!-- ═══ MODAL DE DETALLE DE IBERMON ═══
+     Al hacer clic en una card, se abre este modal con los stats completos.
+     catalog.js se encarga de llenarlo con los datos de la API.
+     ════════════════════════════════ -->
+<div class="modal-overlay" id="ibermonModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Detalle Ibermon</span>
+      <button class="modal-close" id="ibermonModalClose">✕</button>
+    </div>
+    <div class="modal-body" id="ibermonModalBody">
+      <div class="loading-state"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+
+<div id="footer"></div>
+
+<script src="scripts/modules/config.js"></script>
+<script src="scripts/api/api.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/nav.js"></script>
+<!-- catalog.js contiene toda la lógica de esta página -->
+<script src="scripts/pages/catalog.js"></script>
+
+</body>
+</html>

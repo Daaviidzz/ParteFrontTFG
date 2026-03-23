@@ -1,0 +1,157 @@
+/* ============================================================
+   pages/catalogo.css — Estilos específicos del catálogo
+   ============================================================
+
+   Aquí están los estilos que solo usa catalogo.html:
+   - El layout de dos columnas del modo API (sidebar + main)
+   - La grid de ibermon
+   - El modal de detalle de ibermon (sprite, stats, movimientos)
+
+   Las tabs, el buscador y el JSON viewer ya vienen de components.css
+   ============================================================ */
+
+
+/* ── LAYOUT DEL MODO API ─────────────────────────────────────
+   Cuando el usuario activa el modo "API", la página se divide
+   en dos columnas: el sidebar con los endpoints y el área
+   principal con la respuesta JSON.
+   ─────────────────────────────────────────────────────────── */
+.catalog-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* El sidebar se queda pegado al scroll para que siempre sea accesible */
+.catalog-sidebar {
+  position: sticky;
+  top: 80px;  /* deja espacio para el navbar sticky (60px) + un poco más */
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.catalog-sidebar-title {
+  font-family: var(--font-pixel);
+  font-size: .55rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: .25rem .5rem;
+  margin-bottom: .5rem;
+}
+
+/* min-width: 0 evita que el contenido desborde el grid */
+.catalog-main { min-width: 0; }
+
+
+/* ── GRID DE IBERMON ─────────────────────────────────────────
+   auto-fill con minmax para que se ajuste automáticamente
+   al número de columnas posibles según el ancho disponible.
+   No necesito media queries para esto.
+   ─────────────────────────────────────────────────────────── */
+.ibermon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+
+/* ── MODAL DE DETALLE IBERMON ────────────────────────────────
+   El modal que aparece al hacer clic en una card de Ibermon.
+   Muestra el sprite grande, los tipos y las estadísticas base.
+   ─────────────────────────────────────────────────────────── */
+
+/* Cabecera del modal con el sprite animado */
+.modal-sprite-wrap {
+  text-align: center;
+  padding: 1.5rem;
+  background: radial-gradient(circle at 50% 50%, rgba(76, 201, 240, .08) 0%, transparent 60%);
+  border-bottom: 1px solid var(--border);
+}
+
+/* El sprite flota arriba y abajo gracias a la animación "float" de components.css */
+.modal-sprite {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 8px 24px rgba(76, 201, 240, .4));
+  animation: float 3s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+.modal-types { display: flex; gap: .5rem; justify-content: center; margin-top: .75rem; }
+
+.modal-num  { font-family: var(--font-pixel); font-size: .55rem; color: var(--text-muted); }
+.modal-name { font-family: var(--font-pixel); font-size: .9rem; color: var(--text); margin: .3rem 0; }
+
+.modal-desc {
+  font-size: .82rem;
+  color: var(--text-dim);
+  max-width: 360px;
+  margin: .5rem auto 0;
+  line-height: 1.6;
+}
+
+/* Grid de 4 datos (catch rate, exp, crecimiento, evolución) */
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .6rem;
+  margin: 1rem 0;
+}
+
+.detail-item {
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  padding: .6rem .85rem;
+}
+
+.detail-item-label { font-size: .7rem; color: var(--text-muted); text-transform: uppercase; }
+.detail-item-val   { font-size: .9rem; font-weight: 700; color: var(--text); }
+
+/* Los movimientos que puede aprender, como pastillas */
+.moves-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .5rem;
+}
+
+.move-chip {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: .25rem .65rem;
+  font-size: .72rem;
+  color: var(--text-dim);
+  display: flex;
+  gap: .35rem;
+  align-items: center;
+}
+
+/* El nivel en amarillo para que destaque */
+.move-level { color: var(--yellow); font-weight: 600; }
+
+
+/* ── Responsive del catálogo ─────────────────────────────────
+   En tablet el sidebar deja de ser sticky y pasa a estar arriba.
+   En móvil la grid de ibermon se hace más pequeña.
+   ─────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .catalog-layout  { grid-template-columns: 1fr; }
+  .catalog-sidebar { position: static; max-height: none; }
+}
+
+@media (max-width: 768px) {
+  .ibermon-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+}
+
+@media (max-width: 480px) {
+  .ibermon-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+}

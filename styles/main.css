@@ -1,9 +1,6 @@
-/* ============================================================
-   main.css — Punto de entrada del CSS
-   ============================================================ */
-
+/* main.css — Punto de entrada del CSS */
 @import './variables.css';
 @import './components.css';
 
-/* Estilos por página */
 @import './pages/index.css';
+@import './pages/catalogo.css';
