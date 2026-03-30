@@ -1,0 +1,137 @@
+/* ============================================================
+   pages/dashboard.css — Estilos específicos del dashboard
+   ============================================================
+
+   Solo lo que usa dashboard.html y no existe en otro sitio:
+   - El hero de bienvenida con el avatar del entrenador
+   - Las tarjetas de partida con sus stats
+   - El input inline de renombrar partida
+   ============================================================ */
+
+
+/* ── HERO DE BIENVENIDA DEL ENTRENADOR ───────────────────────
+   El banner con el avatar y el nombre del usuario que aparece
+   en la parte superior del dashboard.
+   ─────────────────────────────────────────────────────────── */
+.dashboard-hero {
+  background: linear-gradient(135deg, var(--bg-deep), var(--bg-surface));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Círculo decorativo en la esquina superior derecha — efecto de destello */
+.dashboard-hero::before {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(249, 199, 79, .08), transparent 70%);
+  pointer-events: none;
+}
+
+/* El avatar redondo con borde dorado como los entrenadores de élite */
+.dashboard-avatar {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  border-radius: 50%;
+  border: 3px solid var(--yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+/* El nombre del usuario en amarillo pixel — como en los juegos */
+.dashboard-user-name { font-family: var(--font-pixel); font-size: .75rem; color: var(--yellow); }
+.dashboard-user-sub  { font-size: .85rem; color: var(--text-dim); margin-top: .25rem; }
+
+
+/* ── TARJETAS DE PARTIDA ─────────────────────────────────────
+   Cada partida guardada se muestra como una tarjeta con el
+   personaje, el mapa actual, las estadísticas y las acciones.
+   ─────────────────────────────────────────────────────────── */
+.partida-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.partida-card:hover { border-color: var(--border-b); transform: translateY(-3px); }
+
+/* Cabecera de la tarjeta con gradiente */
+.partida-header {
+  background: linear-gradient(135deg, var(--bg-surface), var(--bg-card));
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* El nombre de la partida (o alias personalizado) en pixel font */
+.partida-char { font-family: var(--font-pixel); font-size: .65rem; color: var(--yellow); }
+
+/* Los últimos 8 caracteres del ID de la partida — como referencia técnica */
+.partida-id { font-size: .7rem; color: var(--text-muted); font-family: monospace; }
+
+/* Grid de 2 columnas para los datos de estadísticas de la partida */
+.partida-stats {
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .75rem;
+}
+
+.partida-stat       { display: flex; flex-direction: column; gap: .2rem; }
+.partida-stat-label { font-size: .7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+.partida-stat-val   { font-size: .95rem; font-weight: 700; color: var(--text); }
+
+/* Los botones de acción al pie de la tarjeta */
+.partida-actions {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: .5rem;
+}
+
+
+/* ── INPUT DE RENOMBRAR ──────────────────────────────────────
+   Cuando el usuario hace clic en "Renombrar", el div con el
+   nombre se sustituye por este input inline. JS se encarga de
+   la lógica, aquí solo ponemos los estilos.
+   ─────────────────────────────────────────────────────────── */
+.rename-input {
+  background: var(--bg-deep);
+  border: 1px solid var(--blue);
+  border-radius: 4px;
+  padding: .25rem .5rem;
+  color: var(--text);
+  font-family: var(--font-pixel);
+  font-size: .6rem;
+}
+
+
+/* ── Responsive del dashboard ────────────────────────────────
+   En móvil las estadísticas de la partida mantienen 2 columnas
+   porque 4 caben bien. Las acciones se apilan verticalmente.
+   ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .partida-stats { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .partida-actions { flex-direction: column; }
+}

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Partidas — Ibermon</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+
+<!-- ═══ CABECERA DE PÁGINA ═══ -->
+<div class="page-header">
+  <div class="container">
+    <span class="section-label">Panel de Entrenador</span>
+    <h1 class="section-title" style="font-size:1.1rem">Mis Partidas</h1>
+    <p class="page-subtitle">Gestiona tus partidas guardadas y sigue tu progreso.</p>
+  </div>
+</div>
+
+
+<main class="section-sm">
+  <div class="container">
+
+    <!-- ── Hero de bienvenida ──
+         dashboard.js rellena dashUser y dashEmail con los datos de Auth.getUser()
+         ──────────────────────── -->
+    <div class="dashboard-hero mb-4">
+      <div class="dashboard-avatar">🎮</div>
+      <div>
+        <div class="dashboard-user-name" id="dashUser">Entrenador</div>
+        <div class="dashboard-user-sub"  id="dashEmail"></div>
+      </div>
+    </div>
+
+
+    <!-- ── Resumen de estadísticas ──
+         Los 4 contadores que dashboard.js rellena con updateStats()
+         ──────────────────────────── -->
+    <div class="grid-4 gap-2 mb-4">
+      <div class="card card-body text-center">
+        <div style="font-family:var(--font-pixel);font-size:1.5rem;color:var(--blue);margin-bottom:.35rem"
+             id="statCount">—</div>
+        <div style="font-size:.8rem;color:var(--text-muted)">Partidas activas</div>
+      </div>
+      <div class="card card-body text-center">
+        <div style="font-family:var(--font-pixel);font-size:1.5rem;color:var(--yellow);margin-bottom:.35rem"
+             id="statMedallas">—</div>
+        <div style="font-size:.8rem;color:var(--text-muted)">Medallas totales</div>
+      </div>
+      <div class="card card-body text-center">
+        <div style="font-family:var(--font-pixel);font-size:1.5rem;color:var(--green);margin-bottom:.35rem"
+             id="statBatallas">—</div>
+        <div style="font-size:.8rem;color:var(--text-muted)">Batallas ganadas</div>
+      </div>
+      <div class="card card-body text-center">
+        <div style="font-family:var(--font-pixel);font-size:1.5rem;color:var(--red);margin-bottom:.35rem"
+             id="statCapturados">—</div>
+        <div style="font-size:.8rem;color:var(--text-muted)">Ibermon capturados</div>
+      </div>
+    </div>
+
+
+    <!-- ── Cabecera de la lista ── -->
+    <div class="flex-between mb-3" style="flex-wrap:wrap;gap:.75rem">
+      <h2 style="font-family:var(--font-pixel);font-size:.7rem;color:var(--text)">
+        Partidas guardadas
+      </h2>
+      <!-- loadPartidas() está definido en dashboard.js -->
+      <button class="btn btn-ghost btn-sm" onclick="loadPartidas()">↺ Actualizar</button>
+    </div>
+
+
+    <!-- ── Lista de partidas ──
+         dashboard.js rellena este contenedor con las tarjetas
+         ──────────────────── -->
+    <div id="partidasContainer">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <div>Cargando partidas...</div>
+      </div>
+    </div>
+
+
+    <!-- ── Nota informativa ── -->
+    <div class="alert alert-info mt-4" style="display:flex;align-items:flex-start;gap:.75rem">
+      <span style="font-size:1rem;flex-shrink:0">ℹ️</span>
+      <div style="font-size:.82rem">
+        Solo puedes <strong>renombrar</strong> y <strong>eliminar</strong> partidas desde aquí.
+        Para crear o gestionar el equipo y el inventario, abre el juego.
+      </div>
+    </div>
+
+  </div>
+</main>
+
+
+<!-- ═══ MODAL DE CONFIRMACIÓN DE BORRADO ═══
+     Se abre cuando el usuario hace clic en "Eliminar".
+     dashboard.js gestiona el evento de confirmación.
+     ════════════════════════════════════════ -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-header">
+      <span class="modal-title">Eliminar partida</span>
+      <button class="modal-close" id="deleteCancelBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:.5rem 0 1.5rem">
+        <div style="font-size:2.5rem;margin-bottom:1rem">🗑️</div>
+        <p style="color:var(--text);margin-bottom:.5rem;font-weight:600">¿Eliminar esta partida?</p>
+        <p style="font-size:.875rem;color:var(--text-dim)">
+          Esta acción es irreversible. Todo el progreso de esta partida se perderá permanentemente.
+        </p>
+      </div>
+      <div style="display:flex;gap:.75rem;justify-content:flex-end">
+        <button class="btn btn-ghost"
+                onclick="document.getElementById('deleteModal').classList.remove('open')">
+          Cancelar
+        </button>
+        <button id="deleteConfirmBtn" class="btn btn-danger">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="footer"></div>
+
+<script src="scripts/modules/config.js"></script>
+<script src="scripts/api/api.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/nav.js"></script>
+<!-- dashboard.js comprueba la autenticación al cargar y luego carga las partidas -->
+<script src="scripts/pages/dashboard.js"></script>
+
+</body>
+</html>
