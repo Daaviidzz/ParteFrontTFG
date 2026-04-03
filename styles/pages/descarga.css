@@ -1,0 +1,58 @@
+/* ============================================================
+   pages/descarga.css — Estilos específicos de la página de descarga
+   ============================================================
+
+   Solo los pasos de instalación numerados. El resto de la página
+   usa componentes genéricos (cards, alerts, botones) que ya
+   están definidos en components.css.
+   ============================================================ */
+
+
+/* ── TARJETAS DE PASO ────────────────────────────────────────
+   Cada paso de instalación se muestra con un número circular
+   y el contenido al lado. El layout es flex horizontal.
+   ─────────────────────────────────────────────────────────── */
+.step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  display: flex;
+  gap: 1.25rem;
+  transition: var(--transition);
+}
+
+.step-card:hover { border-color: var(--border-b); }
+
+/* El número del paso en un círculo rojo con borde */
+.step-num {
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  color: var(--red);
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--red);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;  /* el número no se encoge aunque el contenido sea largo */
+}
+
+.step-content { flex: 1; }
+
+.step-title { font-family: var(--font-pixel); font-size: .65rem; color: var(--text); margin-bottom: .5rem; }
+.step-desc  { font-size: .9rem; color: var(--text-dim); line-height: 1.6; }
+
+/* Para los comandos de terminal como "docker-compose up -d" */
+.step-code {
+  display: inline-block;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: .2rem .5rem;
+  font-family: monospace;
+  font-size: .85rem;
+  color: var(--yellow);
+  margin-top: .5rem;
+}

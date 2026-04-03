@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descarga — Ibermon</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+
+
+<!-- ═══ CABECERA ═══ -->
+<div class="page-header" style="padding-bottom:3rem">
+  <div class="container">
+    <span class="section-label">Empieza tu aventura</span>
+    <h1 class="section-title" style="font-size:1.1rem">Descarga Ibermon</h1>
+    <p class="page-subtitle">Sigue los pasos para instalar y jugar al RPG ibérico.</p>
+    <div class="mt-4" style="display:flex;gap:1rem;flex-wrap:wrap">
+      <!-- El href lo rellena el script de abajo con CONFIG.GITHUB_URL -->
+      <a href="#" target="_blank" rel="noopener" id="githubBtn"
+         class="btn btn-primary btn-lg btn-pixel">
+        ⬇ Ver en GitHub
+      </a>
+      <a href="catalogo.html" class="btn btn-ghost btn-lg">
+        🃏 Explorar Catálogo
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<main class="section">
+  <div class="container">
+    <div style="max-width:760px;margin:0 auto">
+
+      <!-- ── Requisitos del sistema ── -->
+      <div class="card mb-4" style="border-left:3px solid var(--yellow)">
+        <div class="card-header" style="display:flex;align-items:center;gap:.75rem">
+          <span style="font-size:1.25rem">⚙️</span>
+          <h2 style="font-family:var(--font-pixel);font-size:.65rem;color:var(--yellow)">
+            Requisitos del sistema
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="grid-2 gap-2">
+            <div>
+              <div style="font-family:var(--font-pixel);font-size:.55rem;color:var(--text-dim);margin-bottom:.5rem">MÍNIMOS</div>
+              <div style="display:flex;flex-direction:column;gap:.35rem;font-size:.875rem;color:var(--text-dim)">
+                <div>💻 Windows 10 / macOS 12 / Linux</div>
+                <div>🧠 4 GB RAM</div>
+                <div>💾 500 MB espacio libre</div>
+                <div>🖥️ OpenGL 4.3 o DirectX 11</div>
+              </div>
+            </div>
+            <div>
+              <div style="font-family:var(--font-pixel);font-size:.55rem;color:var(--text-dim);margin-bottom:.5rem">RECOMENDADOS</div>
+              <div style="display:flex;flex-direction:column;gap:.35rem;font-size:.875rem;color:var(--text-dim)">
+                <div>💻 Windows 11</div>
+                <div>🧠 8 GB RAM</div>
+                <div>💾 1 GB espacio libre</div>
+                <div>🌐 Conexión a internet (API)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ── Pasos de instalación ── -->
+      <h2 style="font-family:var(--font-pixel);font-size:.7rem;color:var(--text);margin-bottom:1.5rem">
+        Pasos de instalación
+      </h2>
+
+      <div style="display:flex;flex-direction:column;gap:1rem">
+
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Ir al repositorio de GitHub</div>
+            <p class="step-desc">
+              Accede al repositorio oficial del proyecto en GitHub donde encontrarás el código fuente y los releases compilados del juego.
+            </p>
+            <!-- El href lo rellena el script de abajo -->
+            <a id="step1Link" href="#" target="_blank" rel="noopener" class="btn btn-ghost btn-sm mt-2">
+              🔗 Abrir GitHub →
+            </a>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Descargar el release</div>
+            <p class="step-desc">
+              En la sección <strong>Releases</strong> del repositorio, descarga la versión más reciente del juego para tu sistema operativo.
+              El archivo vendrá comprimido en <code class="step-code">.zip</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Extraer el archivo</div>
+            <p class="step-desc">
+              Extrae el contenido del ZIP en una carpeta de tu elección. No muevas los archivos internos, deben permanecer en la misma estructura de carpetas.
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Configurar la API (opcional)</div>
+            <p class="step-desc">
+              Para el guardado en la nube necesitas tener la API corriendo. Puedes usar Docker:
+            </p>
+            <code class="step-code">docker-compose up -d</code>
+            <p class="step-desc mt-2">
+              O conectarte al servidor oficial si está disponible. Sin API, el juego funciona solo en modo local.
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">¡Ejecutar el juego!</div>
+            <p class="step-desc">
+              Abre el ejecutable <code class="step-code">Ibermon.exe</code> (Windows) o el equivalente en tu sistema.
+              En tu primera partida podrás elegir personaje y Ibermon inicial.
+            </p>
+            <div class="alert alert-success mt-2" style="font-size:.82rem">
+              ✅ ¡Listo! Registra tu cuenta en esta web para ver tus partidas en el dashboard.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- ── CTA: crear cuenta ── -->
+      <div class="card card-body text-center mt-4"
+           style="background:linear-gradient(135deg,var(--bg-surface),var(--bg-card));border-color:var(--border-b)">
+        <div style="font-size:2rem;margin-bottom:.75rem">🎮</div>
+        <h3 style="font-family:var(--font-pixel);font-size:.65rem;color:var(--text);margin-bottom:.75rem">
+          ¿Ya tienes el juego?
+        </h3>
+        <p style="font-size:.875rem;color:var(--text-dim);margin-bottom:1.25rem">
+          Regístrate para acceder al dashboard y gestionar tus partidas desde aquí.
+        </p>
+        <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+          <a href="registro.html" class="btn btn-primary">Crear cuenta</a>
+          <a href="catalogo.html" class="btn btn-ghost">Ver catálogo</a>
+        </div>
+      </div>
+
+
+      <!-- ── FAQ ── -->
+      <div class="mt-4">
+        <h2 style="font-family:var(--font-pixel);font-size:.7rem;color:var(--text);margin-bottom:1rem">
+          Preguntas frecuentes
+        </h2>
+        <div style="display:flex;flex-direction:column;gap:.75rem">
+          <details class="card card-body" style="cursor:pointer">
+            <summary style="font-weight:600;font-size:.875rem;list-style:none;display:flex;justify-content:space-between">
+              ¿El juego es gratuito? <span>+</span>
+            </summary>
+            <p style="font-size:.875rem;color:var(--text-dim);margin-top:.75rem">
+              Sí, Ibermon es un proyecto de TFG completamente gratuito y de código abierto.
+            </p>
+          </details>
+          <details class="card card-body" style="cursor:pointer">
+            <summary style="font-weight:600;font-size:.875rem;list-style:none;display:flex;justify-content:space-between">
+              ¿Funciona sin internet? <span>+</span>
+            </summary>
+            <p style="font-size:.875rem;color:var(--text-dim);margin-top:.75rem">
+              El juego puede funcionar sin internet en modo básico, pero el guardado en la nube y la sincronización del equipo requieren conexión a la API.
+            </p>
+          </details>
+          <details class="card card-body" style="cursor:pointer">
+            <summary style="font-weight:600;font-size:.875rem;list-style:none;display:flex;justify-content:space-between">
+              ¿Puedo contribuir al proyecto? <span>+</span>
+            </summary>
+            <p style="font-size:.875rem;color:var(--text-dim);margin-top:.75rem">
+              ¡Claro! El código está en GitHub. Puedes abrir issues, proponer features o hacer pull requests.
+            </p>
+          </details>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+
+<div id="footer"></div>
+
+<script src="scripts/modules/config.js"></script>
+<script src="scripts/api/api.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/nav.js"></script>
+<script>
+  // El único JS específico de esta página es poner la URL de GitHub
+  // en los botones. Son 3 líneas, no merece un archivo propio.
+  document.addEventListener('DOMContentLoaded', () => {
+    const githubUrl = CONFIG.GITHUB_URL || '#';
+    document.getElementById('githubBtn').href  = githubUrl;
+    document.getElementById('step1Link').href  = githubUrl;
+  });
+</script>
+
+</body>
+</html>
