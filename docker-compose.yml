@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+
+  # ── Frontend (nginx) ────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ibermon_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    networks:
+      - ibermon_network
+    depends_on:
+      - api
+
+  # ── API FastAPI ─────────────────────────────────────────────
+  # (copia de la config del proyecto ApiIbermon para stack completo)
+  api:
+    image: ibermon_api:latest       # construida desde ApiIbermon/
+    container_name: ibermon_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      MONGO_URI: mongodb://admin:admin123@mongodb:27017/ibermon_db?authSource=admin
+      MONGO_DB_NAME: ibermon_db
+      SECRET_KEY: dev_secret_key_de_prueba
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 60
+      APP_NAME: ApiIbermon
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - ibermon_network
+
+  # ── MongoDB ─────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7.0
+    container_name: ibermon_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: ibermon_db
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - ibermon_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  ibermon_network:
+    driver: bridge
