@@ -1,0 +1,333 @@
+/* ============================================================
+   chatbot.css — Estilos del IberBot
+   ============================================================
+
+   Separé el chatbot en su propio archivo porque tiene muchos
+   estilos específicos y juntar todo en components.css lo haría
+   difícil de mantener. Así si alguien quiere buscar algo del
+   chatbot sabe exactamente dónde mirar.
+   ============================================================ */
+
+
+/* ── Botón flotante ──────────────────────────────────────────
+   El botón rojo 🤖 que siempre está visible abajo a la derecha.
+   El pulse-glow lo hace parpadear suavemente para llamar la atención.
+   ─────────────────────────────────────────────────────────── */
+#chatbot-toggle {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 800;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  border: 2px solid rgba(255, 255, 255, .2);
+  box-shadow: 0 4px 20px var(--red-glow), 0 0 0 0 var(--red-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #fff;
+  animation: pulse-glow 3s ease infinite;
+  transition: transform .2s ease;
+}
+
+#chatbot-toggle:hover { transform: scale(1.1); }
+
+
+/* ── Panel del chat ──────────────────────────────────────────
+   El panel flotante que aparece al hacer clic en el botón.
+   Oculto por defecto, JS añade la clase .open para mostrarlo.
+   ─────────────────────────────────────────────────────────── */
+#chatbot-panel {
+  position: fixed;
+  bottom: 5rem;
+  right: 1.5rem;
+  z-index: 800;
+  width: 360px;
+  max-height: 540px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-b);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, .6), 0 0 32px var(--blue-glow);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slide-up .25s ease;
+}
+
+#chatbot-panel.open { display: flex; }
+
+
+/* ── Cabecera del panel ───────────────────────────────────── */
+.chatbot-head {
+  padding: .85rem 1rem;
+  background: linear-gradient(135deg, var(--bg-surface), var(--bg-card));
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.chatbot-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .9rem;
+}
+
+.chatbot-name   { font-family: var(--font-pixel); font-size: .55rem; color: var(--text); }
+.chatbot-status { font-size: .7rem; color: var(--green); }
+
+/* El botón de cerrar — empujado al final con margin-left auto */
+#chatbot-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: .2rem .4rem;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+#chatbot-close:hover { color: var(--text); background: var(--bg-card-h); }
+
+
+/* ── Área de mensajes ────────────────────────────────────────
+   Flex con dirección column para que los mensajes se apilen
+   de arriba hacia abajo. El overflow-y permite scroll.
+   ─────────────────────────────────────────────────────────── */
+.chatbot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+/* Cada mensaje tiene un ancho máximo para no ocupar toda la línea */
+.chat-msg {
+  max-width: 85%;
+  padding: .55rem .85rem;
+  border-radius: 12px;
+  font-size: .82rem;
+  line-height: 1.5;
+  animation: fade-in .2s ease;
+}
+
+.chat-msg a { color: var(--blue); text-decoration: underline; }
+
+/* Los mensajes del bot van alineados a la izquierda */
+.chat-msg.bot {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 3px;  /* esquina cuadrada para indicar el "origen" */
+  align-self: flex-start;
+}
+
+/* Los mensajes del usuario van a la derecha, en rojo */
+.chat-msg.user {
+  background: var(--red);
+  color: #fff;
+  border-bottom-right-radius: 3px;
+  align-self: flex-end;
+}
+
+
+/* ── Respuestas rápidas (Quick Replies) ──────────────────────
+   Los botoncitos de acceso rápido debajo de los mensajes.
+   Desaparecen cuando el usuario ya escribe algo.
+   ─────────────────────────────────────────────────────────── */
+.chatbot-quick {
+  padding: .5rem .75rem;
+  display: flex;
+  gap: .35rem;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+}
+
+.quick-btn {
+  font-size: .72rem;
+  padding: .25rem .6rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.quick-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-glow);
+}
+
+
+/* ── Input de texto ──────────────────────────────────────────
+   La caja donde el usuario escribe y el botón de enviar.
+   ─────────────────────────────────────────────────────────── */
+.chatbot-input {
+  display: flex;
+  gap: .5rem;
+  padding: .75rem;
+  border-top: 1px solid var(--border);
+}
+
+.chatbot-input input {
+  flex: 1;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .45rem .75rem;
+  color: var(--text);
+  font-size: .82rem;
+}
+
+.chatbot-input input:focus { outline: none; border-color: var(--blue); }
+
+.chatbot-input button {
+  background: var(--red);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  padding: .45rem .75rem;
+  font-size: .85rem;
+  transition: var(--transition);
+}
+
+.chatbot-input button:hover { background: var(--red-dark); }
+
+
+/* ── Tarjetas de resultado del bot ───────────────────────────
+   Cuando el bot devuelve datos de la API, los muestra en estas
+   tarjetas compactas dentro de los mensajes. Imité el estilo
+   de una pokedex para que sea reconocible.
+   ─────────────────────────────────────────────────────────── */
+.ibot-card {
+  background: var(--bg-deep);
+  border: 1px solid var(--border-b);
+  border-radius: var(--radius);
+  padding: .7rem .85rem;
+  margin-top: .25rem;
+  font-size: .8rem;
+}
+
+.ibot-card-header {
+  display: flex;
+  align-items: baseline;
+  gap: .45rem;
+  margin-bottom: .35rem;
+}
+
+.ibot-num  { font-family: var(--font-pixel); font-size: .5rem; color: var(--text-muted); }
+.ibot-name { font-family: var(--font-pixel); font-size: .6rem; color: var(--text); }
+
+.ibot-tipos { display: flex; gap: .3rem; flex-wrap: wrap; margin-bottom: .4rem; }
+
+.ibot-desc {
+  font-size: .75rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin: .35rem 0;
+  border-left: 2px solid var(--border-b);
+  padding-left: .5rem;
+}
+
+/* Las barras de stats en miniatura dentro del chatbot */
+.ibot-stats        { display: flex; flex-direction: column; gap: .2rem; margin: .4rem 0; }
+.ibot-stat-row     { display: flex; align-items: center; gap: .4rem; font-size: .72rem; }
+.ibot-stat-label   { color: var(--text-muted); width: 2.5rem; flex-shrink: 0; font-family: var(--font-pixel); font-size: .42rem; }
+.ibot-stat-val     { color: var(--text); width: 2rem; text-align: right; flex-shrink: 0; }
+.ibot-stat-bar     { flex: 1; height: 6px; background: var(--bg-surface); border-radius: 3px; overflow: hidden; }
+.ibot-stat-fill    { height: 100%; border-radius: 3px; transition: width .4s ease; }
+
+/* Los mismos colores que las barras del catálogo */
+.ibot-stat-fill.stat-low   { background: var(--red); }
+.ibot-stat-fill.stat-mid   { background: var(--yellow); }
+.ibot-stat-fill.stat-high  { background: var(--green); }
+.ibot-stat-fill.stat-vhigh { background: var(--blue); }
+
+.ibot-extra {
+  border-top: 1px solid var(--border);
+  margin-top: .4rem;
+  padding-top: .4rem;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.ibot-row   { display: flex; justify-content: space-between; font-size: .75rem; color: var(--text-dim); }
+.ibot-label { color: var(--text-muted); }
+
+/* Enlace "Ver en catálogo" al final de la tarjeta */
+.ibot-link {
+  display: inline-block;
+  margin-top: .5rem;
+  font-size: .72rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+.ibot-link:hover { text-decoration: underline; }
+
+
+/* ── Nota de corrección difusa ───────────────────────────────
+   Cuando el bot sugiere "¿quisiste decir X?" porque el
+   nombre tenía una errata, aparece este aviso amarillo.
+   ─────────────────────────────────────────────────────────── */
+.ibot-fuzzy-note {
+  font-size: .72rem;
+  color: var(--yellow);
+  background: rgba(249, 199, 79, .08);
+  border: 1px solid rgba(249, 199, 79, .25);
+  border-radius: 6px;
+  padding: .3rem .6rem;
+  margin-bottom: .4rem;
+}
+
+
+/* ── Animación de carga del bot ──────────────────────────────
+   Los tres puntitos que aparecen mientras el bot consulta la API.
+   Cada punto tiene un animation-delay para crear el efecto de ola.
+   ─────────────────────────────────────────────────────────── */
+.chat-loading {
+  display: flex;
+  gap: .35rem;
+  align-items: center;
+  padding: .7rem 1rem;
+}
+
+.chat-loading .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--blue);
+  animation: dot-bounce .9s ease-in-out infinite;
+}
+
+.chat-loading .dot:nth-child(2) { animation-delay: .15s; }
+.chat-loading .dot:nth-child(3) { animation-delay: .30s; }
+
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0);   opacity: .4; }
+  40%            { transform: translateY(-6px); opacity: 1; }
+}
+
+
+/* ── Responsive del chatbot ──────────────────────────────────
+   En móvil el panel ocupa casi todo el ancho de la pantalla.
+   ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  #chatbot-panel {
+    width: calc(100vw - 2rem);
+    right: 1rem;
+  }
+}
