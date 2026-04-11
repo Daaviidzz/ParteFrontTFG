@@ -2,6 +2,9 @@
 @import './variables.css';
 @import './components.css';
 
+/* Chatbot en su propio archivo porque tiene muchos estilos */
+@import './chatbot.css';
+
 @import './pages/index.css';
 @import './pages/catalogo.css';
 @import './pages/dashboard.css';
