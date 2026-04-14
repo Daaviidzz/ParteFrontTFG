@@ -39,6 +39,44 @@ function preloadCatalogs() {
 }
 
 
+// Búsqueda difusa con Levenshtein
+// Permite encontrar "Bulbasaur" aunque el usuario escriba "Bulbasor".
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function fuzzyThreshold(len) {
+  if (len <= 4)  return 1;
+  if (len <= 7)  return 2;
+  if (len <= 11) return 3;
+  return 4;
+}
+
+function fuzzyFindByName(query, list) {
+  if (!query || !list.length) return null;
+  const threshold = fuzzyThreshold(query.length);
+  let best = null, bestDist = Infinity;
+  for (const item of list) {
+    const name = normalize(item.nombre);
+    if (name === query || name.includes(query) || query.includes(name)) return { item, distance: 0 };
+    const dist = levenshtein(query, name);
+    if (dist < bestDist) { bestDist = dist; best = item; }
+  }
+  return bestDist <= threshold ? { item: best, distance: bestDist } : null;
+}
+
+
 // Detección de intención
 
 function normalize(str) {
@@ -100,18 +138,24 @@ async function tryNameSearch(text) {
       || ibermonList.find(ib => normalize(ib.nombre).includes(t) || t.includes(normalize(ib.nombre)));
     if (foundIb) return { intent: 'ibermon', query: foundIb.numero };
 
+    const fuzzyIb = fuzzyFindByName(t, ibermonList);
+    if (fuzzyIb) return { intent: 'ibermon', query: fuzzyIb.item.numero, fuzzyName: fuzzyIb.item.nombre };
 
     const movList = await getMovimientosList().catch(() => []);
     const foundMov = movList.find(m => normalize(m.nombre) === t)
       || movList.find(m => normalize(m.nombre).includes(t) || t.includes(normalize(m.nombre)));
     if (foundMov) return { intent: 'movimiento', query: foundMov.nombre };
 
+    const fuzzyMov = fuzzyFindByName(t, movList);
+    if (fuzzyMov) return { intent: 'movimiento', query: fuzzyMov.item.nombre, fuzzyName: fuzzyMov.item.nombre };
 
     const itemList = await getItemsList().catch(() => []);
     const foundItem = itemList.find(i => normalize(i.nombre) === t)
       || itemList.find(i => normalize(i.nombre).includes(t) || t.includes(normalize(i.nombre)));
     if (foundItem) return { intent: 'item', query: foundItem.nombre };
 
+    const fuzzyItem = fuzzyFindByName(t, itemList);
+    if (fuzzyItem) return { intent: 'item', query: fuzzyItem.item.nombre, fuzzyName: fuzzyItem.item.nombre };
 
   } catch { /* si falla la carga del catálogo simplemente no hay coincidencia */ }
 
@@ -224,7 +268,7 @@ function renderResumenLista(items, tipo) {
 
 // Lógica principal de resolución
 
-async function resolveAPIIntent(intent, query) {
+async function resolveAPIIntent(intent, query, fuzzyName = null) {
   // Listas completas
   if (intent === 'lista_ibermon')     return renderResumenLista(await getIbermonList(),     'Ibermon');
   if (intent === 'lista_movimientos') return renderResumenLista(await getMovimientosList(), 'movimientos');
@@ -250,7 +294,7 @@ async function resolveAPIIntent(intent, query) {
     if (res.status === 404) return `No encontré el Ibermon con ese número. ¿Seguro que existe?`;
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const card = renderIbermonCard(await res.json());
-    return card;
+    return fuzzyName ? `<p class="ibot-fuzzy-note">💡 ¿Quisiste decir <strong>${fuzzyName}</strong>?</p>${card}` : card;
   }
 
   // Movimiento por nombre
@@ -258,11 +302,15 @@ async function resolveAPIIntent(intent, query) {
     const list = await getMovimientosList();
     const q    = normalize(query);
     let found  = list.find(m => normalize(m.nombre) === q) || list.find(m => normalize(m.nombre).includes(q));
+    if (!found) {
+      const fuzzy = fuzzyFindByName(q, list);
+      if (fuzzy) { found = fuzzy.item; fuzzyName = fuzzy.item.nombre; }
+    }
     if (!found) return `No encontré ningún movimiento llamado <strong>"${query}"</strong>. Consulta el <a href="catalogo.html">catálogo</a>.`;
     const res  = await fetch(`${CONFIG.API_BASE}/catalogo/movimientos/${found.numero}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const card = renderMovimientoCard(await res.json());
-    return card;
+    return fuzzyName ? `<p class="ibot-fuzzy-note">💡 ¿Quisiste decir <strong>${fuzzyName}</strong>?</p>${card}` : card;
   }
 
   // Ítem por nombre
@@ -270,11 +318,15 @@ async function resolveAPIIntent(intent, query) {
     const list = await getItemsList();
     const q    = normalize(query);
     let found  = list.find(i => normalize(i.nombre) === q) || list.find(i => normalize(i.nombre).includes(q));
+    if (!found) {
+      const fuzzy = fuzzyFindByName(q, list);
+      if (fuzzy) { found = fuzzy.item; fuzzyName = fuzzy.item.nombre; }
+    }
     if (!found) return `No encontré ningún ítem llamado <strong>"${query}"</strong>. Consulta el <a href="catalogo.html">catálogo</a>.`;
     const res  = await fetch(`${CONFIG.API_BASE}/catalogo/items/${found.numero}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const card = renderItemCard(await res.json());
-    return card;
+    return fuzzyName ? `<p class="ibot-fuzzy-note">💡 ¿Quisiste decir <strong>${fuzzyName}</strong>?</p>${card}` : card;
   }
 
   return null;
@@ -368,7 +420,7 @@ function initChatbot() {
       // Intenta buscar el texto como nombre directo contra los catálogos
       const nameIntent = await tryNameSearch(text);
       if (nameIntent) {
-        const result = await resolveAPIIntent(nameIntent.intent, nameIntent.query);
+        const result = await resolveAPIIntent(nameIntent.intent, nameIntent.query, nameIntent.fuzzyName);
         loadingEl.remove();
         addBotMsg(result ?? '⚠️ No encontré resultados.');
         return;
