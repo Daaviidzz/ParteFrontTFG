@@ -20,9 +20,11 @@ function buildNav() {
   const user        = Auth.getUser();
 
   // Los links de navegación — "Mis Partidas" solo aparece si estás logueado.
+  // "Combate" lo meto aquí para que esté accesible desde cualquier página.
   const links = [
     { href: 'index.html',     label: 'Inicio' },
     { href: 'catalogo.html',  label: 'Catálogo' },
+    { href: 'combate.html',   label: 'Combate' },
     { href: 'dashboard.html', label: 'Mis Partidas', requiresAuth: true },
     { href: 'descarga.html',  label: 'Descarga' },
   ];
@@ -94,6 +96,7 @@ function buildNav() {
         <div class="footer-links">
           <a href="index.html"     class="footer-link">Inicio</a>
           <a href="catalogo.html"  class="footer-link">Catálogo</a>
+          <a href="combate.html"   class="footer-link">Combate</a>
           <a href="descarga.html"  class="footer-link">Descarga</a>
           <a href="dashboard.html" class="footer-link">Mis Partidas</a>
         </div>
