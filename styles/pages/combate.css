@@ -1,0 +1,830 @@
+/* ============================================================
+   combate.css — Estilos de la página de combate
+   ============================================================
+
+   Como el combate tiene MUCHOS elementos distintos (arena,
+   barras de PS, caja de diálogo, log, modales...) lo pongo en
+   su propio archivo para no ensuciar components.css ni mezclar
+   estilos de esta página con el resto.
+
+   Sigo usando las variables de variables.css (--red, --blue, etc.)
+   para que si alguien cambia el tema de color, esto se adapte
+   automáticamente.
+
+   Estructura del archivo:
+     1. Sistema de pantallas (screen-active)
+     2. Selector de equipo (pantalla 1)
+     3. Cola de matchmaking (pantalla 2)
+     4. Arena de combate (pantalla 3)
+     5. Botones de movimientos
+     6. Log + dialog box
+     7. Modales de cambio y resultado
+     8. Animaciones propias de esta página
+     9. Responsive
+   ============================================================ */
+
+
+/* ── 1. SISTEMA DE PANTALLAS ────────────────────────────────── */
+/* Solo una pantalla se muestra cada vez. El JS añade .screen-active
+   al <section> que toca y quita la clase de las otras. */
+
+.screen          { display: none; }
+.screen-active   { display: block; animation: fade-in .35s ease; }
+
+
+/* ── Título y subtítulo ─────────────────────────────────────── */
+.combate-h2 {
+  font-family: var(--font-pixel);
+  font-size: .75rem;
+  color: var(--text);
+  margin-bottom: .4rem;
+}
+
+.combate-sub {
+  font-size: .9rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+
+/* ── 2. PANTALLA DE SELECCIÓN DE EQUIPO ─────────────────────── */
+
+.combate-intro {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--red);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+}
+
+.combate-intro-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+
+/* Barra superior con los 3 slots del equipo + botones */
+.team-picker-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  flex-wrap: wrap;
+}
+
+.team-picker-slots {
+  display: flex;
+  gap: .5rem;
+  flex: 1;
+  min-width: 240px;
+}
+
+.team-slot {
+  flex: 1;
+  min-height: 72px;
+  background: var(--bg-deep);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem .5rem;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  font-size: .5rem;
+  color: var(--text-muted);
+  position: relative;
+  transition: var(--transition);
+}
+
+/* Cuando tiene un Ibermon, cambia de aspecto */
+.team-slot:not(.empty) {
+  border-style: solid;
+  border-color: var(--blue);
+  background: var(--bg-card);
+  color: var(--text);
+  justify-content: flex-start;
+}
+
+.team-slot .slot-sprite {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+.team-slot .slot-name {
+  font-family: var(--font-pixel);
+  font-size: .55rem;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Animación de sacudida cuando intentan añadir el 4º */
+.team-picker-slots.shake { animation: shake .4s ease; }
+
+.team-picker-actions {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+
+/* Tarjetas del selector — reutilizan .ibermon-card de components.css
+   pero añado un estado "picked" con un check verde. */
+.picker-card {
+  position: relative;
+}
+
+.picker-card.picked {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(6, 214, 160, .25);
+}
+
+.picker-check {
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #000;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(6, 214, 160, .4);
+  z-index: 2;
+}
+
+
+/* Grid de Ibermon — reutilizo la clase del catálogo pero la redefino aquí
+   por si el catálogo la cambia en el futuro, que aquí no afecte. */
+.ibermon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+
+/* ── 3. PANTALLA DE COLA / MATCHMAKING ──────────────────────── */
+
+.queue-box {
+  max-width: 520px;
+  margin: 2rem auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-b);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-card), 0 0 40px var(--blue-glow);
+}
+
+/* Pokeball girando grande — para que quede vistoso durante la espera.
+   La animación viene de components.css (spin-slow) pero le cambio la
+   duración aquí. */
+.queue-ball {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  background: linear-gradient(180deg, var(--red) 50%, #fff 50%);
+  margin: 0 auto;
+  position: relative;
+  animation: spin-slow 2.5s linear infinite;
+}
+
+.queue-ball::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  background: #222;
+  transform: translateY(-50%);
+}
+
+.queue-ball-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  background: #fff;
+  border: 4px solid #222;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.queue-timer {
+  font-family: var(--font-pixel);
+  font-size: 1.5rem;
+  color: var(--yellow);
+  margin: 1.5rem 0;
+}
+
+.queue-actions {
+  display: flex;
+  gap: .75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+
+/* ── 4. PANTALLA DE COMBATE: ARENA ──────────────────────────── */
+
+/* Barra con los dos nombres de entrenador */
+.battle-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: .75rem 1.25rem;
+  font-family: var(--font-pixel);
+  font-size: .6rem;
+  color: var(--text);
+}
+
+.battle-trainer {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.trainer-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.trainer-dot.you { background: var(--blue); color: var(--blue); }
+.trainer-dot.foe { background: var(--red);  color: var(--red); }
+
+.battle-vs {
+  font-family: var(--font-pixel);
+  color: var(--yellow);
+  font-size: .75rem;
+  letter-spacing: .1em;
+}
+
+
+/* Arena: la zona "cancha" donde luchan los Ibermon.
+   Fondo con degradado cielo-hierba, decorado con líneas de nube y
+   un círculo en el suelo tipo ring de combate. */
+.arena {
+  position: relative;
+  height: 340px;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(6, 214, 160, .25) 0%, transparent 60%),
+    linear-gradient(180deg, #1a2a44 0%, #243e6a 50%, #2a4a3a 100%);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Líneas de escenario — simula el "ring" circular del combate.
+   Los dos pseudo-elementos son dos óvalos, uno para cada lado. */
+.arena::before,
+.arena::after {
+  content: '';
+  position: absolute;
+  width: 280px;
+  height: 60px;
+  border: 2px solid rgba(255, 255, 255, .08);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .15);
+}
+
+.arena::before { /* el del rival (arriba-derecha) */
+  top: 60px; right: -40px;
+}
+
+.arena::after  { /* el del jugador (abajo-izquierda) */
+  bottom: 40px; left: -40px;
+}
+
+
+/* Cajas de información de cada combatiente */
+.arena-foe,
+.arena-you {
+  position: absolute;
+  display: flex;
+  align-items: flex-end;
+  gap: .5rem;
+  z-index: 2;
+}
+
+.arena-foe {
+  top: 20px;
+  left: 20px;
+  flex-direction: row;
+}
+
+.arena-you {
+  bottom: 20px;
+  right: 20px;
+  flex-direction: row-reverse;
+}
+
+
+/* Caja HP estilo Pokémon */
+.hp-box {
+  background: rgba(13, 13, 26, .85);
+  border: 2px solid var(--border-b);
+  border-radius: var(--radius);
+  padding: .5rem .75rem;
+  min-width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .4);
+  backdrop-filter: blur(4px);
+}
+
+.hp-name {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-pixel);
+  font-size: .55rem;
+  color: var(--text);
+  margin-bottom: .35rem;
+}
+
+.hp-lvl {
+  color: var(--yellow);
+}
+
+.hp-types {
+  display: flex;
+  gap: .25rem;
+  margin-bottom: .4rem;
+  flex-wrap: wrap;
+}
+
+.hp-types .badge-tipo {
+  font-size: .55rem;
+  padding: .1rem .4rem;
+}
+
+
+/* La barra de PS en sí */
+.hp-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.hp-bar-label {
+  font-family: var(--font-pixel);
+  font-size: .45rem;
+  color: var(--yellow);
+}
+
+.hp-bar {
+  flex: 1;
+  height: 8px;
+  background: #000;
+  border: 1px solid #444;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hp-bar-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 3px;
+  transition: width .6s ease-out, background .3s ease;
+}
+
+/* Colores por % restante */
+.hp-bar-fill.hp-green  { background: var(--green); }
+.hp-bar-fill.hp-yellow { background: var(--yellow); }
+.hp-bar-fill.hp-red    { background: var(--red); }
+
+.hp-num {
+  font-family: var(--font-pixel);
+  font-size: .5rem;
+  color: var(--text-dim);
+  min-width: 60px;
+  text-align: right;
+}
+
+
+/* Sprites: el del rival va hacia atrás (ligeramente reducido por
+   perspectiva), el del jugador a "primera persona" más grande. */
+.sprite-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.sprite-wrap img {
+  image-rendering: pixelated;
+  filter: drop-shadow(0 8px 0 rgba(0, 0, 0, .5));
+  transition: transform .3s ease;
+}
+
+.foe-sprite img { width: 110px; height: 110px; }
+.you-sprite img { width: 140px; height: 140px; }
+
+.sprite-shadow {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 14px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, .5), transparent 70%);
+  pointer-events: none;
+}
+
+
+/* Animación de daño — flash rojo rápido */
+.sprite-wrap.hit-flash img {
+  animation: hit-flash .35s ease;
+}
+
+/* Animación de ataque — el sprite se adelanta un poco */
+.sprite-wrap.shake-sprite img {
+  animation: shake-hit .35s ease;
+}
+
+/* Cuando el Ibermon cae K.O., el sprite se desvanece cayendo */
+.sprite-wrap.fainted img {
+  animation: faint-fall .9s ease forwards;
+}
+
+
+/* Capa donde se muestran los números de daño flotantes */
+.arena-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.damage-float {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  color: var(--red);
+  text-shadow:
+    2px 0 0 #000, -2px 0 0 #000,
+    0 2px 0 #000,  0 -2px 0 #000;
+  animation: dmg-float .9s ease forwards;
+}
+
+/* Golpes críticos: más grandes y en amarillo */
+.damage-float.crit {
+  color: var(--yellow);
+  font-size: 1.35rem;
+}
+
+
+/* ── 5. CAJA DE DIÁLOGO ESTILO GAME BOY ─────────────────────── */
+
+.battle-dialog {
+  background: var(--bg-deep);
+  border: 2px solid var(--border-b);
+  border-radius: var(--radius);
+  padding: .9rem 1.25rem;
+  font-family: var(--font-pixel);
+  font-size: .65rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin-top: .75rem;
+  min-height: 56px;
+  position: relative;
+}
+
+/* Flechita parpadeante en la esquina — guiño a los juegos originales */
+.battle-dialog::after {
+  content: '▼';
+  position: absolute;
+  bottom: .5rem;
+  right: .75rem;
+  color: var(--yellow);
+  font-size: .55rem;
+  animation: blink-arrow 1s step-end infinite;
+}
+
+
+/* ── 6. BOTONES DE MOVIMIENTO ───────────────────────────────── */
+
+.battle-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .75rem;
+  margin-top: .75rem;
+}
+
+.action-moves {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+}
+
+/* Cada botón de movimiento muestra nombre + tipo + PP.
+   El color del borde cambia según el tipo del movimiento. */
+.move-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .3rem;
+  padding: .6rem .8rem;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-left-width: 6px;     /* la franja de color del tipo va a la izquierda */
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+}
+
+.move-btn:hover:not(:disabled) {
+  background: var(--bg-card-h);
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+}
+
+.move-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.move-name {
+  font-family: var(--font-pixel);
+  font-size: .55rem;
+}
+
+.move-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: .7rem;
+  color: var(--text-dim);
+}
+
+.move-type {
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-size: .65rem;
+}
+
+.move-pp {
+  font-family: monospace;
+  color: var(--text-muted);
+}
+
+
+/* Bordes por tipo — tiro de los colores que ya están en components.css
+   pero aplicados al borde izquierdo del botón. */
+.move-btn.tipo-Fuego       { border-left-color: #ff6b35; }
+.move-btn.tipo-Agua        { border-left-color: #4cc9f0; }
+.move-btn.tipo-Planta      { border-left-color: #06d6a0; }
+.move-btn.tipo-Electrico   { border-left-color: #f9c74f; }
+.move-btn.tipo-Normal      { border-left-color: #8d99ae; }
+.move-btn.tipo-Psiquico    { border-left-color: #e040fb; }
+.move-btn.tipo-Roca        { border-left-color: #b5a642; }
+.move-btn.tipo-Tierra      { border-left-color: #d4a574; }
+.move-btn.tipo-Hielo       { border-left-color: #a8dadc; }
+.move-btn.tipo-Siniestro   { border-left-color: #4a4e69; }
+.move-btn.tipo-Volador     { border-left-color: #90e0ef; }
+.move-btn.tipo-Veneno      { border-left-color: #9b59b6; }
+.move-btn.tipo-Dragon      { border-left-color: #6a0572; }
+.move-btn.tipo-Acero       { border-left-color: #95a5a6; }
+.move-btn.tipo-Bicho       { border-left-color: #8bc34a; }
+.move-btn.tipo-Lucha       { border-left-color: #e07f39; }
+.move-btn.tipo-Fantasma    { border-left-color: #6c5bb6; }
+
+
+.action-menu {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  justify-content: center;
+}
+
+
+/* ── 7. LOG DEL COMBATE ─────────────────────────────────────── */
+
+.battle-log {
+  margin-top: 1rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .75rem 1rem;
+  height: 140px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: .82rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+.log-line {
+  border-bottom: 1px dashed rgba(255, 255, 255, .05);
+  padding: .1rem 0;
+  animation: slide-up .25s ease;
+}
+
+.log-line:last-child { border-bottom: none; }
+
+
+/* ── 8. MODAL DE CAMBIO ─────────────────────────────────────── */
+
+.switch-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.switch-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.switch-item:not(.disabled):hover {
+  border-color: var(--blue);
+  background: var(--bg-card);
+  transform: translateX(3px);
+}
+
+.switch-item.disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.switch-sprite {
+  width: 56px;
+  height: 56px;
+  image-rendering: pixelated;
+}
+
+.switch-info {
+  flex: 1;
+}
+
+.switch-name {
+  font-family: var(--font-pixel);
+  font-size: .6rem;
+  color: var(--text);
+  margin-bottom: .2rem;
+}
+
+.switch-hp {
+  font-size: .75rem;
+  color: var(--text-dim);
+  margin-bottom: .3rem;
+}
+
+.switch-bar {
+  height: 6px;
+  background: #000;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.switch-bar-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 3px;
+  transition: width .4s ease;
+}
+
+
+/* ── PANTALLA DE RESULTADO ─────────────────────────────────── */
+
+.result-box {
+  max-width: 480px;
+  margin: 3rem auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-b);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+}
+
+.result-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: pop-in .5s ease;
+}
+
+.result-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: .75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+
+/* ── 9. ANIMACIONES PROPIAS DE ESTA PÁGINA ─────────────────── */
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-4px); }
+  75%      { transform: translateX(4px); }
+}
+
+@keyframes shake-hit {
+  0%, 100% { transform: translateX(0); }
+  30%      { transform: translateX(-6px) scale(.98); }
+  60%      { transform: translateX(6px) scale(1.02); }
+}
+
+@keyframes hit-flash {
+  0%, 100% { filter: drop-shadow(0 8px 0 rgba(0, 0, 0, .5)); }
+  40%      { filter: brightness(2.5) drop-shadow(0 0 20px var(--red)); }
+}
+
+@keyframes faint-fall {
+  0%   { transform: translateY(0) rotate(0); opacity: 1; }
+  100% { transform: translateY(60px) rotate(-20deg); opacity: 0; }
+}
+
+@keyframes dmg-float {
+  0%   { transform: translate(-50%, 0);    opacity: 1; }
+  100% { transform: translate(-50%, -40px); opacity: 0; }
+}
+
+@keyframes blink-arrow {
+  50% { opacity: 0; }
+}
+
+@keyframes pop-in {
+  0%   { transform: scale(.4); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+
+/* ── 10. RESPONSIVE ─────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+
+  /* La arena se hace más cuadrada en móvil para que quepa bien */
+  .arena {
+    height: 420px;
+  }
+
+  .arena-foe,
+  .arena-you {
+    flex-direction: column;
+    align-items: center;
+    gap: .35rem;
+  }
+
+  .hp-box {
+    min-width: 180px;
+  }
+
+  .foe-sprite img { width: 90px; height: 90px; }
+  .you-sprite img { width: 110px; height: 110px; }
+
+  /* Los 4 movs pasan a una columna para que no se compriman */
+  .action-moves {
+    grid-template-columns: 1fr;
+  }
+
+  .battle-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .action-menu {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  /* La barra del equipo se apila */
+  .team-picker-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

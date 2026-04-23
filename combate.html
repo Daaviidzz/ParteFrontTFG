@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Combate — Ibermon</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+
+
+<!-- Cabecera de la pagina. Reutilizo las clases de components.css para no tocar CSS. -->
+<div class="page-header">
+  <div class="container">
+    <span class="section-label">Arena de Combate</span>
+    <h1 class="section-title" style="font-size:1.1rem">Combate Online</h1>
+    <p class="page-subtitle">Monta tu equipo y enfrentate a otro entrenador en tiempo real.</p>
+  </div>
+</div>
+
+
+<main class="section-sm">
+  <div class="container">
+
+    <!-- La pagina tiene varias pantallas pero todas viven en el mismo HTML.
+         Solo muestro una cada vez cambiando la clase screen-active.
+         Pantallas: screen-select, screen-queue, screen-battle, screen-result. -->
+
+    <!-- Pantalla 1: seleccion de equipo de 6 Ibermon. -->
+    <section id="screen-select" class="screen screen-active">
+
+      <div class="combate-intro mb-3">
+        <div class="combate-intro-icon">⚔️</div>
+        <div>
+          <h2 class="combate-h2">Elige tu equipo</h2>
+          <p class="combate-sub">
+            Selecciona <strong>6 Ibermon</strong> para tu equipo de combate.
+            Haz clic en una tarjeta para añadirla o quitarla.
+          </p>
+        </div>
+      </div>
+
+      <!-- Mini contador del equipo elegido. El JS lo actualiza segun el jugador marca o desmarca. -->
+      <div class="team-picker-bar mb-3">
+        <div class="team-picker-slots" id="teamSlots">
+          <div class="team-slot empty">Vacio</div>
+          <div class="team-slot empty">Vacio</div>
+          <div class="team-slot empty">Vacio</div>
+          <div class="team-slot empty">Vacio</div>
+          <div class="team-slot empty">Vacio</div>
+          <div class="team-slot empty">Vacio</div>
+        </div>
+        <div class="team-picker-actions">
+          <button class="btn btn-ghost btn-sm" id="btnTeamRandom">🎲 Aleatorio</button>
+          <button class="btn btn-primary btn-sm" id="btnTeamReady" disabled>▶ Buscar rival</button>
+        </div>
+      </div>
+
+      <!-- Buscador: filtra por nombre, igual que en el catalogo. -->
+      <div class="search-bar">
+        <input type="text" id="combatSearch" class="search-input" placeholder="Buscar Ibermon por nombre...">
+      </div>
+
+      <!-- Grid con todos los Ibermon. El JS lo rellena con CatalogAPI.ibermon(). -->
+      <div id="ibermonPickerGrid">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <div>Cargando Ibermon...</div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Pantalla 2: cola de matchmaking. -->
+    <section id="screen-queue" class="screen">
+      <div class="queue-box">
+        <!-- Pokeball girando. Efecto visual para que no parezca que se ha colgado. -->
+        <div class="queue-ball">
+          <div class="queue-ball-inner"></div>
+        </div>
+        <h2 class="combate-h2 text-center mt-3">Buscando rival...</h2>
+        <p class="combate-sub text-center" id="queueStatus">
+          Conectando con la arena...
+        </p>
+
+        <!-- Contador de segundos. Asi el usuario ve que esta pasando algo. -->
+        <div class="queue-timer" id="queueTimer">00:00</div>
+
+        <div class="queue-actions">
+          <button class="btn btn-secondary btn-sm" id="btnFightBot">🤖 Jugar contra la CPU</button>
+          <button class="btn btn-ghost btn-sm"    id="btnQueueCancel">✕ Cancelar</button>
+        </div>
+
+        <div class="alert alert-info mt-3" style="font-size:.8rem">
+          <strong>Nota:</strong> el emparejamiento funciona entre pestañas del mismo navegador.
+          Si quieres probarlo con un amigo, abrid la misma pagina en el mismo equipo.
+          Si no hay nadie, pulsa "Jugar contra la CPU".
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Pantalla 3: combate en vivo. -->
+    <section id="screen-battle" class="screen">
+
+      <!-- Cabecera con nombres de ambos entrenadores. -->
+      <div class="battle-topbar">
+        <div class="battle-trainer">
+          <span class="trainer-dot you"></span>
+          <span id="battleYouName">Tu</span>
+        </div>
+        <span class="battle-vs">VS</span>
+        <div class="battle-trainer">
+          <span id="battleFoeName">Rival</span>
+          <span class="trainer-dot foe"></span>
+        </div>
+      </div>
+
+      <!-- Arena: la zona principal del combate estilo Showdown. -->
+      <div class="arena">
+
+        <!-- Caja del rival arriba a la derecha. -->
+        <div class="arena-foe">
+          <div class="hp-box">
+            <div class="hp-name">
+              <span id="foeName">—</span>
+              <span class="hp-lvl" id="foeLvl">Nv.1</span>
+            </div>
+            <div class="hp-types" id="foeTypes"></div>
+            <div class="hp-bar-wrap">
+              <span class="hp-bar-label">PS</span>
+              <div class="hp-bar"><div class="hp-bar-fill" id="foeHp" style="width:100%"></div></div>
+            </div>
+          </div>
+          <div class="sprite-wrap foe-sprite">
+            <img id="foeSprite" src="" alt="Rival">
+            <div class="sprite-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Caja del jugador abajo a la izquierda. -->
+        <div class="arena-you">
+          <div class="sprite-wrap you-sprite">
+            <img id="youSprite" src="" alt="Tu">
+            <div class="sprite-shadow"></div>
+          </div>
+          <div class="hp-box">
+            <div class="hp-name">
+              <span id="youName">—</span>
+              <span class="hp-lvl" id="youLvl">Nv.1</span>
+            </div>
+            <div class="hp-types" id="youTypes"></div>
+            <div class="hp-bar-wrap">
+              <span class="hp-bar-label">PS</span>
+              <div class="hp-bar"><div class="hp-bar-fill" id="youHp" style="width:100%"></div></div>
+              <span class="hp-num" id="youHpNum">—/—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Capa de mensajes flotantes: daño, efectividad, etc. -->
+        <div class="arena-overlay" id="arenaOverlay"></div>
+      </div>
+
+      <!-- Caja de dialogo estilo Game Boy. Aqui sale lo que va pasando. -->
+      <div class="battle-dialog" id="battleDialog">
+        Que empiece el combate!
+      </div>
+
+      <!-- Panel de acciones: 4 movimientos y menu secundario. -->
+      <div class="battle-actions">
+        <div class="action-moves" id="actionMoves">
+          <!-- El JS rellena este grid con los 4 movimientos. -->
+        </div>
+        <div class="action-menu">
+          <button class="btn btn-ghost btn-sm" id="btnSwitch">🔄 Cambiar</button>
+          <button class="btn btn-danger btn-sm" id="btnForfeit">🏳 Rendirse</button>
+        </div>
+      </div>
+
+      <!-- Log de combate con scroll propio. Se va llenando con cada evento. -->
+      <div class="battle-log" id="battleLog"></div>
+    </section>
+
+
+    <!-- Pantalla 4: resultado final. -->
+    <section id="screen-result" class="screen">
+      <div class="result-box">
+        <div class="result-icon" id="resultIcon">🏆</div>
+        <h2 class="combate-h2 text-center" id="resultTitle">Victoria!</h2>
+        <p class="combate-sub text-center" id="resultText">
+          Has vencido al rival.
+        </p>
+        <div class="result-actions">
+          <button class="btn btn-primary btn-sm" id="btnRematch">↺ Otra partida</button>
+          <a href="index.html" class="btn btn-ghost btn-sm">Salir al inicio</a>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Modal de cambio de Ibermon. Reutiliza los estilos de modal-overlay y modal-box. -->
+    <div class="modal-overlay" id="switchModal">
+      <div class="modal-box" style="max-width:520px">
+        <div class="modal-header">
+          <span class="modal-title">Cambiar Ibermon</span>
+          <button class="modal-close" id="switchCancel">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="text-dim mb-2" style="font-size:.85rem">
+            Elige a que Ibermon quieres cambiar. El turno se consumira igualmente.
+          </p>
+          <div id="switchList" class="switch-list"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+
+<div id="footer"></div>
+
+
+<!-- Los modulos se cargan en orden. Primero los basicos (config, api, auth), despues los
+     especificos del combate (motor, matchmaking) y por ultimo la pagina. Si cambio el orden,
+     el script de pagina no encuentra las funciones y todo explota en la consola. -->
+<script src="scripts/modules/config.js"></script>
+<script src="scripts/api/api.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/nav.js"></script>
+<script src="scripts/modules/chatbot.js"></script>
+<script src="scripts/modules/battle.js"></script>
+<script src="scripts/modules/matchmaking.js"></script>
+<script src="scripts/pages/combate.js"></script>
+
+</body>
+</html>
