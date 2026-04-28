@@ -1,16 +1,6 @@
-/**
- * scripts/modules/chatbot.js — IberBot: asistente del juego
- *
- * Funciona en dos capas:
- * 1. Detección de intención local: si el usuario busca un Ibermon, movimiento
- *    o ítem por nombre o número, fetchea la API directamente y pinta una tarjeta.
- *    Es instantáneo y no consume cuota de Gemini.
- * 2. Gemini (backend Python): para cualquier pregunta de lenguaje natural que
- *    no sea una búsqueda directa del catálogo.
- */
+// IberBot: detecta busquedas del catalogo (instantaneo) y delega el resto al backend con Gemini
 
-
-// Botones de acceso rápido
+// Botones de acceso rapido
 const QUICK_REPLIES = [
   { label: '🔍 Buscar Ibermon #001',    msg: 'ibermon #001' },
   { label: '⚔️ Movimiento Llamarada',   msg: 'movimiento Llamarada' },
@@ -19,7 +9,7 @@ const QUICK_REPLIES = [
 ];
 
 
-// Caché de catálogos para búsquedas instantáneas sin repetir llamadas a la API
+// Cache de catalogos
 const _cache = { ibermon: null, movimientos: null, items: null };
 
 async function _fetchCatalog(endpoint) {
@@ -39,9 +29,7 @@ function preloadCatalogs() {
 }
 
 
-// Búsqueda difusa con Levenshtein
-// Permite encontrar "Bulbasaur" aunque el usuario escriba "Bulbasor".
-
+// Busqueda difusa (Levenshtein) para tolerar errores tipo "Bulbasor"
 function levenshtein(a, b) {
   const m = a.length, n = b.length;
   const dp = Array.from({ length: m + 1 }, (_, i) => [i]);
@@ -77,11 +65,11 @@ function fuzzyFindByName(query, list) {
 }
 
 
-// Detección de intención
+// Deteccion de intencion
 
 function normalize(str) {
   return str.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9\s#]/g, '')
     .trim();
 }
@@ -97,18 +85,17 @@ function detectAPIIntent(raw) {
   if (/lista\s*(de\s*)?(items?|objetos?)/.test(t) || /todos\s*(los\s*)?(items?|objetos?)/.test(t))
     return { intent: 'lista_items' };
 
-  // Ibermon por número (#001, nº1, numero 1)
+  // Ibermon por numero
   const numMatch = t.match(/(?:ibermon\s*)?(?:#|numero\s*|n[oº]\s*|num\s*)(\d{1,3})/);
   if (numMatch) return { intent: 'ibermon', query: parseInt(numMatch[1], 10) };
 
-  // Solo un número → asume Ibermon
   if (/^\s*\d{1,3}\s*$/.test(t)) return { intent: 'ibermon', query: parseInt(t.trim(), 10) };
 
   // Movimiento por nombre
   const movMatch = t.match(/(?:movimiento|move|ataque|tecnica|habilidad)\s+([a-z0-9\s]{2,})/);
   if (movMatch) return { intent: 'movimiento', query: movMatch[1].trim() };
 
-  // Ítem por nombre
+  // Item por nombre
   const itemMatch = t.match(/(?:item|objeto|pocion|capturadora|pokeball|iberball)\s+([a-z0-9\s]{2,})/);
   if (itemMatch) return { intent: 'item', query: itemMatch[1].trim() };
 
@@ -116,15 +103,13 @@ function detectAPIIntent(raw) {
   const ibMatch = t.match(/(?:busca|buscar|muestra|info|que es|quien es|dime|dame|stats?\s+de|datos\s+de|detalle)\s+(?:el\s+|la\s+|ibermon\s*)?([a-z]{3,})/);
   if (ibMatch) return { intent: 'ibermon', query: ibMatch[1].trim() };
 
-  // "ibermon <nombre>" directo
   const ibNomMatch = t.match(/^ibermon\s+([a-z]{3,})/);
   if (ibNomMatch) return { intent: 'ibermon', query: ibNomMatch[1].trim() };
 
   return null;
 }
 
-// Último recurso antes de Gemini: busca el texto directamente contra los catálogos.
-// Cubre el caso de escribir solo el nombre ("Bulbasaur", "Llamarada") sin palabras clave.
+// Ultimo recurso antes de Gemini: matchea el texto contra los catalogos
 async function tryNameSearch(text) {
   const t = normalize(text);
   if (t.length < 3 || t.split(' ').length > 4) return null;
@@ -157,15 +142,13 @@ async function tryNameSearch(text) {
     const fuzzyItem = fuzzyFindByName(t, itemList);
     if (fuzzyItem) return { intent: 'item', query: fuzzyItem.item.nombre, fuzzyName: fuzzyItem.item.nombre };
 
-  } catch { /* si falla la carga del catálogo simplemente no hay coincidencia */ }
+  } catch { /* sin coincidencia */ }
 
   return null;
 }
 
 
-// Formateo de respuestas de la API
-// Estas funciones convierten los datos JSON en HTML
-// para mostrar dentro de los mensajes del chatbot.
+// Render de tarjetas
 
 function renderIbermonCard(ib) {
   const tipos = tipoBadge(ib.tipo1) + (ib.tipo2 ? ' ' + tipoBadge(ib.tipo2) : '');
@@ -266,15 +249,14 @@ function renderResumenLista(items, tipo) {
 }
 
 
-// Lógica principal de resolución
+// Resolucion de la intencion contra la API
 
 async function resolveAPIIntent(intent, query, fuzzyName = null) {
-  // Listas completas
   if (intent === 'lista_ibermon')     return renderResumenLista(await getIbermonList(),     'Ibermon');
   if (intent === 'lista_movimientos') return renderResumenLista(await getMovimientosList(), 'movimientos');
   if (intent === 'lista_items')       return renderResumenLista(await getItemsList(),        'ítems');
 
-  // Ibermon por número o nombre
+  // Ibermon
   if (intent === 'ibermon') {
     let url;
     if (typeof query === 'number') {
@@ -297,7 +279,7 @@ async function resolveAPIIntent(intent, query, fuzzyName = null) {
     return fuzzyName ? `<p class="ibot-fuzzy-note">💡 ¿Quisiste decir <strong>${fuzzyName}</strong>?</p>${card}` : card;
   }
 
-  // Movimiento por nombre
+  // Movimiento
   if (intent === 'movimiento') {
     const list = await getMovimientosList();
     const q    = normalize(query);
@@ -313,7 +295,7 @@ async function resolveAPIIntent(intent, query, fuzzyName = null) {
     return fuzzyName ? `<p class="ibot-fuzzy-note">💡 ¿Quisiste decir <strong>${fuzzyName}</strong>?</p>${card}` : card;
   }
 
-  // Ítem por nombre
+  // Item
   if (intent === 'item') {
     const list = await getItemsList();
     const q    = normalize(query);
@@ -332,7 +314,7 @@ async function resolveAPIIntent(intent, query, fuzzyName = null) {
   return null;
 }
 
-// Llama al backend Python para preguntas de lenguaje natural
+// Pregunta al backend (Gemini) para lenguaje natural
 async function preguntarAIberBot(mensaje) {
   const res = await fetch(`${CONFIG.API_BASE}/chatbot/mensaje`, {
     method: 'POST',
@@ -347,9 +329,7 @@ async function preguntarAIberBot(mensaje) {
 }
 
 
-// Componente de interfaz
-// Creo el chatbot dinámicamente con JS para no meter 60 líneas
-// de HTML en cada página. Solo necesito que el body exista.
+// UI del chatbot
 
 function initChatbot() {
   const toggleBtn     = document.createElement('button');
@@ -408,7 +388,7 @@ function initChatbot() {
     const loadingEl = addLoadingMsg();
 
     try {
-      // Primero intenta resolver como búsqueda del catálogo (instantáneo, sin Gemini)
+      // Primero busqueda directa contra el catalogo
       const intent = detectAPIIntent(text);
       if (intent) {
         const result = await resolveAPIIntent(intent.intent, intent.query);
@@ -417,7 +397,7 @@ function initChatbot() {
         return;
       }
 
-      // Intenta buscar el texto como nombre directo contra los catálogos
+      // Despues, matchear el texto como nombre directo
       const nameIntent = await tryNameSearch(text);
       if (nameIntent) {
         const result = await resolveAPIIntent(nameIntent.intent, nameIntent.query, nameIntent.fuzzyName);
@@ -426,7 +406,7 @@ function initChatbot() {
         return;
       }
 
-      // Si no coincide con nada del catálogo, pregunta a Gemini
+      // Si no, a Gemini
       const respuesta = await preguntarAIberBot(text);
       loadingEl.remove();
       addBotMsg(respuesta);
@@ -458,7 +438,7 @@ function initChatbot() {
     msgs.scrollTop = msgs.scrollHeight;
   }
 
-  // Los tres puntos animados mientras se espera la respuesta
+  // Tres puntos animados mientras se espera la respuesta
   function addLoadingMsg() {
     const el = document.createElement('div');
     el.className = 'chat-msg bot chat-loading';

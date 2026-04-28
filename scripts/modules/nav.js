@@ -1,26 +1,10 @@
-/**
- * scripts/modules/nav.js — Navbar y footer dinámicos
- *
- * En vez de copiar el HTML del navbar en cada página (que sería
- * una pesadilla de mantener si hay que cambiar algo), lo genero
- * dinámicamente desde JavaScript y lo inyecto en el div #navbar
- * que tiene cada HTML.
- *
- * La función detecta en qué página estamos para marcar el link
- * activo, y si el usuario está logueado muestra su nombre o los
- * botones de login/registro.
- */
+// Inyecta el navbar y el footer en cada pagina
 
-
-// buildNav() construye e inyecta el navbar y el footer en cada página
 function buildNav() {
-  // Saco el nombre del archivo actual de la URL para marcar el link activo
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
   const isLogged    = Auth.isLoggedIn();
   const user        = Auth.getUser();
 
-  // Los links de navegación — "Mis Partidas" solo aparece si estás logueado.
-  // "Combate" lo meto aquí para que esté accesible desde cualquier página.
   const links = [
     { href: 'index.html',     label: 'Inicio' },
     { href: 'catalogo.html',  label: 'Catálogo' },
@@ -29,7 +13,6 @@ function buildNav() {
     { href: 'descarga.html',  label: 'Descarga' },
   ];
 
-  // Filtro los links según si requieren autenticación y genero el HTML
   const navLinks = links
     .filter(l => !l.requiresAuth || isLogged)
     .map(l => {
@@ -38,7 +21,6 @@ function buildNav() {
     })
     .join('');
 
-  // La parte derecha del navbar: nombre de usuario o botones de login/registro
   const authHtml = isLogged
     ? `<div class="nav-user">
          <span>Hola, <strong>${user?.username || 'Entrenador'}</strong></span>
@@ -47,8 +29,6 @@ function buildNav() {
     : `<a href="login.html"    class="btn btn-ghost btn-sm">Entrar</a>
        <a href="registro.html" class="btn btn-primary btn-sm">Registrarse</a>`;
 
-  // Los mismos links para el menú móvil (sin el "activo" porque en móvil
-  // no hay suficiente espacio visual para destacarlo bien)
   const mobileLinks = links
     .filter(l => !l.requiresAuth || isLogged)
     .map(l => `<a href="${l.href}" class="nav-link">${l.label}</a>`)
@@ -59,7 +39,6 @@ function buildNav() {
     : `<a href="login.html"    class="btn btn-ghost btn-sm">Entrar</a>
        <a href="registro.html" class="btn btn-primary btn-sm">Registrarse</a>`;
 
-  // El HTML completo del navbar
   const navHTML = `
 <nav class="navbar">
   <div class="container">
@@ -82,7 +61,6 @@ function buildNav() {
   </div>
 </nav>`;
 
-  // El HTML del footer — con links a recursos y al GitHub de la API
   const footerHTML = `
 <footer class="footer">
   <div class="container">
@@ -117,15 +95,12 @@ function buildNav() {
   </div>
 </footer>`;
 
-  // Inyecto el navbar y el footer en sus respectivos placeholders del HTML
   const navPlaceholder    = document.getElementById('navbar');
   const footerPlaceholder = document.getElementById('footer');
   if (navPlaceholder)    navPlaceholder.outerHTML    = navHTML;
   if (footerPlaceholder) footerPlaceholder.outerHTML = footerHTML;
 
-  // Conecto el botón hamburguesa con el menú móvil
-  // Uso setTimeout(0) porque el elemento acaba de ser inyectado y necesito
-  // que el DOM lo procese antes de buscar el elemento
+  // El elemento se acaba de inyectar, espero al siguiente tick para enlazar el toggle
   setTimeout(() => {
     const toggle = document.getElementById('navToggle');
     const menu   = document.getElementById('mobileMenu');
@@ -135,5 +110,4 @@ function buildNav() {
   }, 0);
 }
 
-// Ejecuto buildNav cuando el DOM está listo — todas las páginas lo necesitan
 document.addEventListener('DOMContentLoaded', buildNav);
