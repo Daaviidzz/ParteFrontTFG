@@ -1,23 +1,11 @@
-/**
- * scripts/pages/index.js — Lógica específica de la landing (index.html)
- *
- * Lo único que hace este archivo es cargar la vista previa del catálogo
- * en la landing. Son los primeros 8 Ibermon de la API mostrados como
- * tarjetas enlazadas al catálogo completo.
- *
- * Separé esto de nav.js y auth.js porque es lógica específica de index.html
- * y no tiene sentido mezclarla con los módulos genéricos.
- */
+// Vista previa del catalogo en la landing (primeros 8 Ibermon)
 
 document.addEventListener('DOMContentLoaded', async () => {
   const grid = document.getElementById('heroIbermonGrid');
-  if (!grid) return;  // por si acaso no estamos en la landing
+  if (!grid) return;
 
   try {
-    // Pido los ibermon a la API — uso CatalogAPI que ya está definido en api.js
     const ibermon = await CatalogAPI.ibermon();
-
-    // Solo muestro los primeros 8 como vista previa
     const preview = ibermon.slice(0, 8);
 
     if (preview.length === 0) {
@@ -29,8 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // Cada tarjeta es un enlace al catálogo completo
-    // (no abro el modal porque estamos en la landing, no en el catálogo)
+    // Cada tarjeta linka al catalogo (no abro modal porque estamos en la landing)
     grid.innerHTML = preview.map(ib => `
       <a href="catalogo.html" class="ibermon-card" style="text-decoration:none">
         <div class="card-num">${formatNum(ib.numero)}</div>
@@ -43,7 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       </a>`).join('');
 
   } catch {
-    // Si la API no está levantada, muestro un mensaje amigable en vez de un error raro
     grid.innerHTML = `
       <div class="empty-state" style="grid-column:1/-1">
         <div class="empty-icon">🔌</div>

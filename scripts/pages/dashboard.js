@@ -1,26 +1,11 @@
-/**
- * scripts/pages/dashboard.js — Panel de partidas del usuario
- *
- * Esta página es exclusiva para usuarios autenticados.
- * Muestra las partidas guardadas con sus estadísticas y permite
- * renombrarlas (alias local en localStorage) o eliminarlas.
- *
- * La lógica de renombrar no llama a la API porque el alias es
- * solo visual — el nombre real de la partida sigue siendo el
- * personaje elegido. El alias se guarda en el navegador del usuario.
- */
+// Dashboard de partidas: lista, renombra (alias local) y elimina
 
-// Clave de localStorage donde guardo los alias de partidas
 const ALIAS_KEY = 'ibermon_aliases';
 
 
-// Inicialización
 document.addEventListener('DOMContentLoaded', async () => {
-  // Si el usuario no está logueado, lo mando al login
-  // (Auth.requireAuth() se encarga de la redirección)
   if (!Auth.requireAuth()) return;
 
-  // Muestro el nombre y email del usuario en el hero del dashboard
   const user = Auth.getUser();
   if (user) {
     document.getElementById('dashUser').textContent  = user.username || 'Entrenador';
@@ -31,12 +16,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 
-// Cargar y renderizar partidas
-
-/**
- * Pide las partidas a la API y las renderiza.
- * Si falla, muestra un mensaje de error con opción de reintentar.
- */
 async function loadPartidas() {
   const container = document.getElementById('partidasContainer');
   container.innerHTML = loadingHTML('Cargando partidas...');
@@ -58,7 +37,6 @@ async function loadPartidas() {
   }
 }
 
-/** Genera el HTML de la lista de tarjetas de partida */
 function renderPartidas(partidas) {
   const container = document.getElementById('partidasContainer');
   const aliases   = getAliases();
@@ -78,8 +56,7 @@ function renderPartidas(partidas) {
       ${partidas.map(p => renderPartidaCard(p, aliases[p.id])).join('')}
     </div>`;
 
-  // Conecto los botones de acción (renombrar/eliminar) usando delegación de eventos
-  // para no tener que añadir listeners a cada botón individualmente
+  // Delegacion de eventos para los botones de cada tarjeta
   container.querySelectorAll('[data-action]').forEach(btn => {
     btn.addEventListener('click', () =>
       handlePartidaAction(btn.dataset.action, btn.dataset.id, btn.dataset.char)
@@ -87,9 +64,8 @@ function renderPartidas(partidas) {
   });
 }
 
-/** Genera el HTML de una tarjeta de partida */
 function renderPartidaCard(p, alias) {
-  // El alias tiene prioridad sobre el nombre del personaje elegido
+  // El alias tiene prioridad sobre el nombre del personaje
   const displayName = alias || p.personaje_elegido || 'Partida';
   const tiempo      = formatTime(p.tiempo_jugado || 0);
   const totalBatallas = p.combates_ganados + p.combates_perdidos;
@@ -163,17 +139,12 @@ function renderPartidaCard(p, alias) {
 
 // Acciones sobre partidas
 
-/** Enruta la acción al handler correspondiente */
 function handlePartidaAction(action, id, currentName) {
   if (action === 'rename') startRename(id, currentName);
   if (action === 'delete') confirmDelete(id);
 }
 
-/**
- * Activa el modo edición inline del nombre de la partida.
- * Reemplaza el div con el nombre por un input de texto.
- * Al salir del input (blur) o presionar Enter, guarda el alias.
- */
+// Modo edicion inline: sustituye el nombre por un input
 function startRename(id, currentName) {
   const nameEl = document.getElementById(`name-${id}`);
   if (!nameEl) return;
@@ -202,7 +173,7 @@ function startRename(id, currentName) {
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') input.blur();
     if (e.key === 'Escape') {
-      // Si cancela con Escape, restauro el nombre original
+      // Cancelar: restauro el nombre original
       const nameSpan       = document.createElement('div');
       nameSpan.className   = 'partida-char';
       nameSpan.id          = `name-${id}`;
@@ -212,11 +183,7 @@ function startRename(id, currentName) {
   });
 }
 
-/**
- * Muestra el modal de confirmación antes de eliminar.
- * No elimino directamente porque es una acción irreversible
- * y quiero que el usuario confirme explícitamente.
- */
+// Modal de confirmacion antes de borrar
 function confirmDelete(id) {
   const modal      = document.getElementById('deleteModal');
   const confirmBtn = document.getElementById('deleteConfirmBtn');
@@ -236,14 +203,10 @@ function confirmDelete(id) {
   }, { once: true });
 }
 
-/**
- * Llama a la API para eliminar la partida.
- * Animo la tarjeta antes de eliminarla para que la transición sea suave.
- */
 async function executeDelete(id) {
   const card = document.getElementById(`card-${id}`);
 
-  // Animación de fade out antes de eliminar del DOM
+  // Fade out antes de quitar la tarjeta del DOM
   if (card) {
     card.style.transition = 'all .3s ease';
     card.style.opacity    = '0';
@@ -256,22 +219,19 @@ async function executeDelete(id) {
 
     setTimeout(() => {
       card?.remove();
-      // Si ya no quedan tarjetas, recargo para mostrar el estado vacío
+      // Si ya no quedan tarjetas, recargo para mostrar el estado vacio
       const grid = document.getElementById('partidasGrid');
       if (grid && grid.children.length === 0) loadPartidas();
     }, 300);
 
   } catch (e) {
-    // Si falla, revierto la animación y muestro el error
     if (card) { card.style.opacity = '1'; card.style.transform = ''; }
     alert('Error al eliminar la partida: ' + e.message);
   }
 }
 
 
-// Estadísticas del resumen
-
-/** Actualiza los 4 contadores de la cabecera del dashboard */
+// Stats de la cabecera
 function updateStats(partidas) {
   document.getElementById('statCount').textContent =
     partidas.length;
@@ -287,9 +247,7 @@ function updateStats(partidas) {
 }
 
 
-// Alias en localStorage
-// Son los nombres personalizados que el usuario da a sus partidas.
-// No se guardan en el servidor, solo en el navegador.
+// Alias en localStorage (no se guardan en el servidor)
 
 function getAliases() {
   try { return JSON.parse(localStorage.getItem(ALIAS_KEY)) || {}; }
@@ -311,23 +269,20 @@ function removeAliasFromStorage(id) {
 
 // Helpers
 
-/** Recorta el nombre del mapa si es demasiado largo */
 function truncateMap(map) {
   if (!map) return '—';
   return map.length > 18 ? map.slice(0, 16) + '…' : map;
 }
 
-/** HTML del spinner de carga con mensaje opcional */
 function loadingHTML(msg = '') {
   return `<div class="loading-state"><div class="spinner"></div><div>${msg}</div></div>`;
 }
 
 
-// Modal de confirmación de borrado
+// Cerrar el modal al hacer click fuera
 document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('deleteModal');
   if (!overlay) return;
-  // Cerrar el modal al hacer clic fuera de él
   overlay.addEventListener('click', e => {
     if (e.target === overlay) overlay.classList.remove('open');
   });

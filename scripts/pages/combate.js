@@ -1,72 +1,38 @@
-/**
- * scripts/pages/combate.js — Controlador de la página de combate
- *
- * Esta es la "orquesta" que conecta tres cosas:
- *   1. La UI (pantallas, botones, barras de PS, log, modales...)
- *   2. El motor de combate (Battle) — quien calcula qué pasa cada turno.
- *   3. El matchmaking (Matchmaking) — quien conecta con el rival humano.
- *
- * El código está dividido en secciones para que sea fácil de seguir:
- *   - Constantes y estado global de la página
- *   - Arranque (DOMContentLoaded)
- *   - Pantalla 1: selección de equipo
- *   - Pantalla 2: matchmaking (cola)
- *   - Pantalla 3: combate en vivo
- *   - Pantalla 4: resultado final
- *   - Helpers de UI (pantallas, dialog, log, sprites...)
- *
- * He dejado muchos comentarios porque hay cosas NO obvias (como por qué
- * el HOST envía resultados o por qué animo las barras de PS con delay).
- */
-
-
-// ══════════════════════════════════════════════════════════════════════
-// ESTADO GLOBAL
-// Lo pongo fuera de las funciones porque varias de ellas necesitan
-// leer/escribir el mismo estado y pasárselo como parámetro sería un lío.
-// En un proyecto grande lo metería en una clase, pero aquí así queda claro.
-// ══════════════════════════════════════════════════════════════════════
+// Pagina de combate: conecta UI, motor (Battle) y matchmaking
 
 const Combate = {
-  // Datos cargados de la API (se cachean al entrar a la página)
-  catalogoIbermon:    [],     // lista reducida para el selector
-  catalogoMovimientos:[],     // lista de movs completa (se usa al construir unidad)
+  // Datos del catalogo
+  catalogoIbermon:    [],
+  catalogoMovimientos:[],
 
-  // Selección del jugador
-  seleccionNumeros:   [],     // ids de Ibermon elegidos (máx 6)
+  // Seleccion del jugador
+  seleccionNumeros:   [],
 
-  // Equipos construidos (cuando empieza el combate)
-  equipoYo:           [],     // array de unidades Battle.buildUnit()
+  // Equipos en combate
+  equipoYo:           [],
   equipoFoe:          [],
 
-  // Estado del combate
-  activoYo:           null,   // referencia a la unidad activa
+  // Estado
+  activoYo:           null,
   activoFoe:          null,
   turno:              0,
-  modoBot:            false,  // true si el rival es CPU (y no otra pestaña)
-  esperandoAccion:    false,  // bloqueo de botones mientras se resuelve turno
-  accionPendiente:    null,   // acción que el jugador ya eligió en este turno
-  accionRival:        null,   // acción del rival humano cuando llegue
+  modoBot:            false,
+  esperandoAccion:    false,
+  accionPendiente:    null,
+  accionRival:        null,
   combateTerminado:   false,
 };
 
 
-// ══════════════════════════════════════════════════════════════════════
-// ARRANQUE
-// Al cargar la página, pido el catálogo y monto la selección de equipo.
-// Además inicializo el canal de matchmaking por si el usuario decide
-// buscar rival humano.
-// ══════════════════════════════════════════════════════════════════════
+// Arranque
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Muestro el nombre del usuario si está logueado, si no "Entrenador"
   const usuario = Auth.getUser?.();
   const nombre  = usuario?.username || 'Entrenador';
 
   Matchmaking.init(nombre);
 
-  // Cargo los datos del catálogo en paralelo (más rápido que uno tras otro).
-  // Si la API falla, muestro un mensaje y paro aquí — sin catálogo no hay combate.
+  // Cargo el catalogo en paralelo. Sin catalogo no hay combate
   try {
     const [ibermon, movs] = await Promise.all([
       CatalogAPI.ibermon(),
@@ -81,34 +47,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   renderPickerGrid();
 
-  // Conexiones de botones de la pantalla 1
+  // Pantalla 1
   document.getElementById('btnTeamRandom').addEventListener('click', seleccionAleatoria);
   document.getElementById('btnTeamReady').addEventListener('click',  comenzarBusqueda);
 
-  // Buscador
   document.getElementById('combatSearch').addEventListener('input', e => {
     renderPickerGrid(e.target.value.trim().toLowerCase());
   });
 
-  // Botones de la cola
+  // Pantalla 2 (cola)
   document.getElementById('btnFightBot').addEventListener('click', lanzarContraBot);
   document.getElementById('btnQueueCancel').addEventListener('click', cancelarBusqueda);
 
-  // Botones del combate
+  // Pantalla 3 (combate)
   document.getElementById('btnSwitch').addEventListener('click',  abrirModalCambio);
   document.getElementById('btnForfeit').addEventListener('click', rendirse);
   document.getElementById('switchCancel').addEventListener('click', cerrarModalCambio);
 
-  // Botones de resultado
+  // Pantalla 4 (resultado)
   document.getElementById('btnRematch').addEventListener('click', () => location.reload());
 
-  // Listeners del emparejamiento — los registro desde el principio.
-  // Si luego el usuario juega contra la CPU, estos callbacks no se disparan
-  // y tampoco molestan.
   registrarListenersMatchmaking();
 
-  // Al cerrar la pestaña aviso al rival por si estamos emparejados,
-  // para que no se quede esperando eternamente.
+  // Aviso al rival si cierro la pestanya
   window.addEventListener('beforeunload', () => {
     try { Matchmaking.rendirse(); } catch (_) {}
     Matchmaking.cerrar();
@@ -116,17 +77,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 
-// ══════════════════════════════════════════════════════════════════════
-// PANTALLA 1: SELECCIÓN DE EQUIPO
-// El usuario elige 6 Ibermon del catálogo.
-// ══════════════════════════════════════════════════════════════════════
+// Pantalla 1: seleccion de equipo
 
-/** Renderiza el grid de selección. El filtro es opcional (texto a buscar). */
 function renderPickerGrid(filtro = '') {
   const cont = document.getElementById('ibermonPickerGrid');
   const q = filtro.toLowerCase();
 
-  // Filtro por nombre (igual que en el catálogo). Sin filtro, muestra todo.
   const lista = q
     ? Combate.catalogoIbermon.filter(i => i.nombre.toLowerCase().includes(q))
     : Combate.catalogoIbermon;
@@ -145,14 +101,12 @@ function renderPickerGrid(filtro = '') {
       ${lista.map(i => renderPickerCard(i)).join('')}
     </div>`;
 
-  // Click en cada tarjeta para añadir/quitar del equipo
   cont.querySelectorAll('[data-num]').forEach(c => {
     c.addEventListener('click', () => togglePicker(parseInt(c.dataset.num)));
   });
 }
 
 
-/** Una tarjeta del selector. Le pongo un check visual si está seleccionada. */
 function renderPickerCard(i) {
   const marcada = Combate.seleccionNumeros.includes(i.numero);
   return `
@@ -169,17 +123,14 @@ function renderPickerCard(i) {
 }
 
 
-/** Añade/quita un Ibermon al equipo. Máx 6. */
+// Anyade/quita un Ibermon (max 6)
 function togglePicker(numero) {
   const idx = Combate.seleccionNumeros.indexOf(numero);
   if (idx >= 0) {
-    // Ya estaba — lo quito
     Combate.seleccionNumeros.splice(idx, 1);
   } else {
-    // No estaba — lo añado solo si aún no tiene 6
     if (Combate.seleccionNumeros.length >= 6) {
-      // Si ya hay 6, aviso con un pequeño flash. En vez de un alert(),
-      // que queda feo, animo la barra superior.
+      // Aviso visual con shake en vez de un alert feo
       parpadearSlots();
       return;
     }
@@ -190,7 +141,6 @@ function togglePicker(numero) {
 }
 
 
-/** Refresca la barra de slots y el botón "Buscar rival". */
 function actualizarSlotsEquipo() {
   const slots = document.getElementById('teamSlots');
   const els   = slots.querySelectorAll('.team-slot');
@@ -211,16 +161,14 @@ function actualizarSlotsEquipo() {
     }
   }
 
-  // El botón se activa solo cuando hay 6 Ibermon
   btn.disabled = Combate.seleccionNumeros.length !== 6;
 }
 
 
-/** Elige 6 Ibermon al azar — útil para no tener que elegir cada vez al probar. */
+// 6 al azar sin repetir
 function seleccionAleatoria() {
   const copia = [...Combate.catalogoIbermon];
   Combate.seleccionNumeros = [];
-  // Saco 6 elementos al azar sin repetir (algoritmo Fisher-Yates parcial)
   for (let i = 0; i < 6 && copia.length > 0; i++) {
     const idx = Math.floor(Math.random() * copia.length);
     Combate.seleccionNumeros.push(copia[idx].numero);
@@ -231,31 +179,24 @@ function seleccionAleatoria() {
 }
 
 
-/** Efecto visual cuando intentan añadir un 7º Ibermon. */
 function parpadearSlots() {
   const slots = document.getElementById('teamSlots');
   slots.classList.remove('shake');
-  // Force reflow para que la animación se vuelva a disparar — truco habitual.
+  // Force reflow para relanzar la animacion
   void slots.offsetWidth;
   slots.classList.add('shake');
 }
 
 
-// ══════════════════════════════════════════════════════════════════════
-// PANTALLA 2: MATCHMAKING
-// Al pulsar "Buscar rival", paso a la pantalla de cola y publico mi
-// presencia. Cuenta un timer para ver que hay actividad.
-// ══════════════════════════════════════════════════════════════════════
+// Pantalla 2: cola de matchmaking
 
-let _queueTimerId   = null;   // intervalo que va incrementando el contador
-let _queueToken     = null;   // retorno de Matchmaking.buscar() para cancelar
+let _queueTimerId   = null;
+let _queueToken     = null;
 let _queueSegundos  = 0;
 
 
-/** Al pulsar "Buscar rival" */
 async function comenzarBusqueda() {
-  // Construyo mi equipo YA (así si me emparejan, solo tengo que enviarlo).
-  // Uso el detalle completo porque necesito stats base y movimientos.
+  // Construyo el equipo ya, asi al emparejar solo lo envio
   try {
     Combate.equipoYo = await construirEquipoDesdeCatalogo(Combate.seleccionNumeros);
   } catch (e) {
@@ -266,8 +207,7 @@ async function comenzarBusqueda() {
   mostrarPantalla('screen-queue');
   Combate.modoBot = false;
 
-  // Timer de segundos — puramente estético, pero ayuda a no pensar que
-  // la página se ha quedado pillada.
+  // Timer estetico
   _queueSegundos = 0;
   document.getElementById('queueTimer').textContent = '00:00';
   _queueTimerId = setInterval(() => {
@@ -281,7 +221,6 @@ async function comenzarBusqueda() {
 }
 
 
-/** Al pulsar "Cancelar" en la cola */
 function cancelarBusqueda() {
   if (_queueToken) _queueToken.cancelar();
   if (_queueTimerId) clearInterval(_queueTimerId);
@@ -291,16 +230,14 @@ function cancelarBusqueda() {
 }
 
 
-/** Al pulsar "Jugar contra la CPU" */
+// Modo CPU
 async function lanzarContraBot() {
-  // Paro la cola de buscar si estaba activa
   if (_queueToken) _queueToken.cancelar();
   if (_queueTimerId) clearInterval(_queueTimerId);
 
   Combate.modoBot = true;
 
-  // El bot tiene un equipo aleatorio de 6 Ibermon distintos al mío
-  // (sería raro enfrentarme a seis copias exactas de los míos).
+  // El bot tiene un equipo aleatorio distinto al mio
   const ajenos = Combate.catalogoIbermon
     .filter(i => !Combate.seleccionNumeros.includes(i.numero))
     .map(i => i.numero);
@@ -322,73 +259,57 @@ async function lanzarContraBot() {
     return;
   }
 
-  // En modo bot yo siempre soy el "HOST" (nadie más calcula nada)
+  // En modo bot yo soy siempre el HOST
   arrancarCombate('CPU', true);
 }
 
 
-// ══════════════════════════════════════════════════════════════════════
-// LISTENERS DE MATCHMAKING
-// Aquí respondo a lo que llega del otro jugador a través del canal.
-// ══════════════════════════════════════════════════════════════════════
+// Listeners del matchmaking
 
 function registrarListenersMatchmaking() {
 
-  // --- Cuando se actualiza el estado de la cola ---
   Matchmaking.on('buscandoEstado', (txt) => {
     const el = document.getElementById('queueStatus');
     if (el) el.textContent = txt;
   });
 
 
-  // --- Cuando encontramos rival ---
   Matchmaking.on('emparejado', async (peer) => {
     if (_queueTimerId) clearInterval(_queueTimerId);
 
-    // Envío mi equipo "aplanado" (sin funciones, solo datos)
+    // Envio mi equipo aplanado (sin funciones, solo datos)
     const planos = Combate.equipoYo.map(aplanarUnidad);
     Matchmaking.enviarEquipo(planos);
 
-    // Me guardo el nombre del rival para la UI
     Combate._nombreRival = peer.nombre;
-    // (Si el rival envía el suyo antes que yo, ya lo procesará el handler de abajo)
   });
 
 
-  // --- El rival manda su equipo (los datos planos) ---
   Matchmaking.on('equipoRecibido', (equipoPlano) => {
-    // Reconstruyo las unidades a partir de los datos recibidos.
-    // No me fío de que el otro use los mismos nombres de variables que
-    // yo si hay versiones distintas del código, por eso aplano/desaplano.
+    // Reconstruyo a partir de los datos recibidos
     Combate.equipoFoe = equipoPlano.map(rehidratarUnidad);
 
-    // Cuando tengo ambos equipos listos, arranco el combate
     if (Combate.equipoYo.length && Combate.equipoFoe.length) {
       arrancarCombate(Combate._nombreRival || 'Rival', Matchmaking.soyHost());
     }
   });
 
 
-  // --- Acción del rival en el turno ---
   Matchmaking.on('accionRecibida', (accion) => {
     Combate.accionRival = accion;
     resolverTurnoSiProcede();
   });
 
 
-  // --- El HOST me manda el resultado ya calculado (yo soy GUEST) ---
+  // Soy GUEST: el HOST me manda los eventos resueltos
   Matchmaking.on('resultadoRecibido', ({ eventos, estado }) => {
-    // Aplico el snapshot sobre mi estado local para que coincida
     aplicarSnapshot(estado);
-    // Los eventos vienen con el "lado" desde el punto de vista del HOST
-    // (A = su equipo, B = el mío). Los invierto para que, al replayar,
-    // "A" siga siendo MI equipo en MI pantalla y todo encaje visualmente.
+    // Invierto el lado para que "A" siga siendo MI equipo en mi pantalla
     const invertidos = eventos.map(invertirLadoEvento);
     reproducirEventos(invertidos);
   });
 
 
-  // --- El rival se ha rendido o cerrado la pestaña ---
   Matchmaking.on('rivalSeFue', ({ motivo }) => {
     if (Combate.combateTerminado) return;
     Combate.combateTerminado = true;
@@ -400,12 +321,8 @@ function registrarListenersMatchmaking() {
 }
 
 
-// ══════════════════════════════════════════════════════════════════════
-// PANTALLA 3: COMBATE
-// Una vez tengo ambos equipos montados, arranco el combate.
-// ══════════════════════════════════════════════════════════════════════
+// Pantalla 3: combate
 
-/** Lanza la pantalla de combate. */
 function arrancarCombate(nombreRival, esHost) {
   Combate.activoYo  = Combate.equipoYo[0];
   Combate.activoFoe = Combate.equipoFoe[0];
@@ -425,12 +342,10 @@ function arrancarCombate(nombreRival, esHost) {
 }
 
 
-/** Repinta las barras de PS, sprites y nombres. */
 function pintarActivos() {
   const y = Combate.activoYo;
   const f = Combate.activoFoe;
 
-  // Lado jugador
   document.getElementById('youName').textContent    = y.nombre;
   document.getElementById('youLvl').textContent     = `Nv.${y.nivel}`;
   document.getElementById('youSprite').src          = y.sprite;
@@ -438,7 +353,6 @@ function pintarActivos() {
   document.getElementById('youHpNum').textContent   = `${y.hp}/${y.hpMax}`;
   pintarHP('youHp', y.hp, y.hpMax);
 
-  // Lado rival
   document.getElementById('foeName').textContent    = f.nombre;
   document.getElementById('foeLvl').textContent     = `Nv.${f.nivel}`;
   document.getElementById('foeSprite').src          = f.sprite;
@@ -447,13 +361,12 @@ function pintarActivos() {
 }
 
 
-/** Actualiza una barra de PS con color según el % restante. */
+// Color por % de PS: verde >50, amarillo 20-50, rojo <20
 function pintarHP(id, actual, max) {
   const pct = Math.max(0, (actual / max) * 100);
   const el  = document.getElementById(id);
   el.style.width = pct + '%';
 
-  // Colores como en Pokémon: verde >50%, amarillo 20-50%, rojo <20%
   el.classList.remove('hp-green', 'hp-yellow', 'hp-red');
   if      (pct > 50) el.classList.add('hp-green');
   else if (pct > 20) el.classList.add('hp-yellow');
@@ -461,7 +374,6 @@ function pintarHP(id, actual, max) {
 }
 
 
-/** Pinta los 4 botones de movimiento de la unidad activa. */
 function actualizarBotonesMovimientos() {
   const cont = document.getElementById('actionMoves');
   const u    = Combate.activoYo;
@@ -482,51 +394,40 @@ function actualizarBotonesMovimientos() {
 }
 
 
-/** El jugador pulsa un movimiento */
 function elegirMovimiento(idx) {
   if (Combate.esperandoAccion || Combate.combateTerminado) return;
 
-  // Bloqueo la interacción para que no pulsen dos veces
+  // Bloqueo para que no pulsen dos veces
   Combate.esperandoAccion = true;
   Combate.accionPendiente = { tipo: 'mov', indice: idx };
   setDialog(`${Combate.activoYo.nombre} usa ${Combate.activoYo.moves[idx].nombre}...`);
   bloquearBotones(true);
 
-  // Si es modo bot, el bot decide al momento y resolvemos.
   if (Combate.modoBot) {
     Combate.accionRival = Battle.decidirAccionBot(estadoBattle(), 'B');
     resolverTurnoSiProcede();
     return;
   }
 
-  // Si es multijugador, mando mi acción y espero la suya
   Matchmaking.enviarAccion(Combate.accionPendiente);
   resolverTurnoSiProcede();
 }
 
 
-/**
- * Si tengo mi acción Y la del rival, resuelvo el turno.
- * El HOST calcula el resultado y se lo envía al GUEST. El GUEST espera.
- */
+// Si tengo mi accion y la del rival, resuelvo (solo HOST/CPU)
 function resolverTurnoSiProcede() {
   if (!Combate.accionPendiente || !Combate.accionRival) return;
 
-  // Si soy GUEST (no HOST) en modo multijugador, NO calculo yo el turno:
-  // espero a que me llegue el resultado del HOST (que es la autoridad).
-  // Es como en los juegos online: un jugador es servidor para evitar
-  // desincronizaciones.
+  // GUEST espera el resultado del HOST (la autoridad)
   if (!Combate._soyHost && !Combate.modoBot) {
-    // Dejo las acciones guardadas hasta que el HOST mande el resultado
     return;
   }
 
-  // Yo soy HOST (o modo bot) → resuelvo con el motor
+  // HOST o modo bot: resuelvo con el motor
   const estado = estadoBattle();
   const eventos = Battle.resolverTurno(estado, Combate.accionPendiente, Combate.accionRival);
 
-  // Si es multijugador, mando el resultado al rival ANTES de reproducir
-  // los eventos en pantalla (así él empieza a verlos más o menos a la vez).
+  // En multijugador mando el resultado antes de reproducir, asi el rival empieza casi a la vez
   if (!Combate.modoBot) {
     Matchmaking.enviarResultado(eventos, snapshotEstado());
   }
@@ -535,16 +436,13 @@ function resolverTurnoSiProcede() {
 }
 
 
-/**
- * Reproduce los eventos de un turno en la UI, uno por uno con delay
- * para que parezca un combate y no un log vomitando texto.
- */
+// Reproduce los eventos del turno con delays para que parezca un combate
 async function reproducirEventos(eventos) {
   for (const ev of eventos) {
     await reproducirEvento(ev);
   }
 
-  // Tras reproducir todo, compruebo fin del combate
+  // Fin del combate?
   if (Battle.equipoKO(Combate.equipoYo)) {
     Combate.combateTerminado = true;
     mostrarResultado(false, 'Has perdido el combate.');
@@ -556,7 +454,7 @@ async function reproducirEventos(eventos) {
     return;
   }
 
-  // Si uno de los activos está K.O., hay que elegir relevo forzado
+  // Relevo forzado si cae el activo
   if (Combate.activoYo.fainted)  await forzarRelevoYo();
   if (Combate.activoFoe.fainted) await forzarRelevoFoe();
 
@@ -571,12 +469,10 @@ async function reproducirEventos(eventos) {
 }
 
 
-/** Maneja un evento del motor y lo convierte en UI + texto. */
 async function reproducirEvento(ev) {
   switch (ev.tipo) {
 
     case 'cambio': {
-      // Actualizo el activo en el estado según el lado
       if (ev.lado === 'A') Combate.activoYo  = ev.entra;
       else                  Combate.activoFoe = ev.entra;
       const nombreLado = ev.lado === 'A' ? 'Tú' : (Combate._nombreRival || 'El rival');
@@ -590,7 +486,6 @@ async function reproducirEvento(ev) {
     case 'ataque':
       setDialog(`${ev.atacante.nombre} usa ${ev.mov.nombre}.`);
       addLog(`${ev.atacante.nombre} usa ${ev.mov.nombre}.`);
-      // Pequeña animación de "temblor" del sprite atacante
       sacudirSprite(ev.lado === 'A' ? 'you-sprite' : 'foe-sprite');
       await delay(600);
       break;
@@ -612,13 +507,10 @@ async function reproducirEvento(ev) {
       break;
 
     case 'impacto': {
-      // Animación de daño sobre el defensor
       const cajaDef = ev.lado === 'A' ? 'foe-sprite' : 'you-sprite';
       flashDanyo(cajaDef);
       mostrarDanyoFlotante(cajaDef, ev.danyo, ev.critico);
 
-      // Actualizo la barra de PS con una pequeña pausa para que se vea
-      // la animación de la transición CSS (width).
       if (ev.lado === 'A') {
         Combate.activoFoe.hp = ev.hpRestante;
         pintarHP('foeHp', ev.hpRestante, ev.hpMax);
@@ -628,7 +520,7 @@ async function reproducirEvento(ev) {
         document.getElementById('youHpNum').textContent = `${ev.hpRestante}/${ev.hpMax}`;
       }
 
-      // Texto de efectividad — igual que en los juegos
+      // Texto de efectividad
       if (ev.efect === 0)        { setDialog('No afecta...');           addLog('Sin efecto.'); }
       else if (ev.efect >= 2)    { setDialog('¡Es súper eficaz!');      addLog('Súper eficaz.'); }
       else if (ev.efect <= 0.5)  { setDialog('No es muy eficaz...');    addLog('Poco eficaz.'); }
@@ -645,7 +537,6 @@ async function reproducirEvento(ev) {
       const unidad = ev.unidad;
       addLog(`¡${unidad.nombre} cae K.O.!`);
       setDialog(`¡${unidad.nombre} no puede continuar!`);
-      // Animación de sprite cayendo
       const cls = ev.lado === 'A' ? 'you-sprite' : 'foe-sprite';
       document.querySelector('.' + cls).classList.add('fainted');
       await delay(1100);
@@ -656,10 +547,8 @@ async function reproducirEvento(ev) {
 }
 
 
-// ══════ SELECCIÓN DE RELEVO ══════
-// Cuando un Ibermon cae, hay que sacar otro.
+// Relevo forzado
 
-/** Muestra el modal y espera a que el jugador elija un relevo. */
 function forzarRelevoYo() {
   return new Promise(resolve => {
     abrirModalCambio(true, (slot) => {
@@ -673,7 +562,6 @@ function forzarRelevoYo() {
 }
 
 
-/** Selección automática para el rival cuando cae su activo. */
 function forzarRelevoFoe() {
   return new Promise(resolve => {
     const idx = Combate.equipoFoe.findIndex(u => !u.fainted);
@@ -687,18 +575,14 @@ function forzarRelevoFoe() {
 }
 
 
-// ══════ CAMBIO VOLUNTARIO ══════
+// Cambio voluntario
 
-/**
- * Abre el modal para elegir qué Ibermon sacar.
- * Si "forzado" es true, es porque el activo ha caído (no se puede cancelar).
- */
 function abrirModalCambio(forzado = false, callback = null) {
   const lista = document.getElementById('switchList');
   const modal = document.getElementById('switchModal');
   const cerrarBtn = document.getElementById('switchCancel');
 
-  // Si es forzado, oculto el botón de cerrar
+  // Si es forzado, no se puede cancelar
   cerrarBtn.style.display = forzado ? 'none' : '';
 
   lista.innerHTML = Combate.equipoYo.map((u, i) => {
@@ -716,7 +600,6 @@ function abrirModalCambio(forzado = false, callback = null) {
       </div>`;
   }).join('');
 
-  // Conecto el click de cada item
   lista.querySelectorAll('.switch-item:not(.disabled)').forEach(it => {
     it.addEventListener('click', () => {
       const slot = parseInt(it.dataset.slot);
@@ -725,7 +608,7 @@ function abrirModalCambio(forzado = false, callback = null) {
       if (callback) {
         callback(slot);
       } else {
-        // Cambio voluntario — cuenta como acción del turno
+        // Cambio voluntario: cuenta como accion del turno
         Combate.esperandoAccion = true;
         Combate.accionPendiente = { tipo: 'cambio', slot };
         bloquearBotones(true);
@@ -750,11 +633,8 @@ function cerrarModalCambio() {
 }
 
 
-// ══════ RENDICIÓN ══════
-
 function rendirse() {
   if (Combate.combateTerminado) return;
-  // Pequeña confirmación — es una acción irreversible
   if (!confirm('¿Seguro que quieres rendirte? Perderás el combate.')) return;
 
   Combate.combateTerminado = true;
@@ -763,9 +643,7 @@ function rendirse() {
 }
 
 
-// ══════════════════════════════════════════════════════════════════════
-// PANTALLA 4: RESULTADO
-// ══════════════════════════════════════════════════════════════════════
+// Pantalla 4: resultado
 
 function mostrarResultado(ganado, texto) {
   document.getElementById('resultIcon').textContent  = ganado ? '🏆' : '💀';
@@ -775,63 +653,50 @@ function mostrarResultado(ganado, texto) {
 }
 
 
-// ══════════════════════════════════════════════════════════════════════
-// CONSTRUCCIÓN DE EQUIPO
-// Pide el detalle de cada Ibermon y monta las unidades de combate.
-// ══════════════════════════════════════════════════════════════════════
+// Construccion de equipos
 
 async function construirEquipoDesdeCatalogo(nums) {
-  // Promise.all para pedir los 6 detalles en paralelo.
-  // El catálogo de movimientos ya está cargado en Combate.catalogoMovimientos.
+  // Promise.all para pedir los 6 detalles en paralelo
   const detalles = await Promise.all(nums.map(n => CatalogAPI.ibermonById(n)));
   return detalles.map(d => Battle.buildUnit(d, Combate.catalogoMovimientos));
 }
 
 
-// ══════════════════════════════════════════════════════════════════════
-// HELPERS DE UI (cambios de pantalla, diálogo, log, animaciones, etc.)
-// ══════════════════════════════════════════════════════════════════════
+// Helpers de UI
 
-/** Cambia la pantalla activa ocultando las demás. */
 function mostrarPantalla(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('screen-active'));
   document.getElementById(id).classList.add('screen-active');
-  // Scroll arriba para que no quede una pantalla anterior mostrándose a medias
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 
-/** Pone un mensaje grande en la caja de diálogo estilo GB. */
 function setDialog(txt) {
   document.getElementById('battleDialog').textContent = txt;
 }
 
 
-/** Añade una línea al log del combate. Limita a las últimas 80 líneas. */
 function addLog(msg) {
   const log = document.getElementById('battleLog');
   const line = document.createElement('div');
   line.className   = 'log-line';
   line.textContent = `[T${Combate.turno}] ${msg}`;
   log.appendChild(line);
-  // Scroll automático al final
   log.scrollTop = log.scrollHeight;
-  // Recorto si hay demasiado texto para que no se convierta en una biblia
+  // Limito a 80 lineas para no llenarlo de texto
   while (log.children.length > 80) log.removeChild(log.firstChild);
 }
 
 
-/** Pequeña sacudida del sprite al atacar. */
 function sacudirSprite(cls) {
   const el = document.querySelector('.' + cls);
   if (!el) return;
   el.classList.remove('shake-sprite');
-  void el.offsetWidth;  // reflow para relanzar animación
+  void el.offsetWidth;
   el.classList.add('shake-sprite');
 }
 
 
-/** Flash rojo cuando recibe daño. */
 function flashDanyo(cls) {
   const el = document.querySelector('.' + cls);
   if (!el) return;
@@ -841,13 +706,12 @@ function flashDanyo(cls) {
 }
 
 
-/** Número de daño flotante estilo juegos arcade. */
+// Numero de danyo flotante encima del defensor
 function mostrarDanyoFlotante(cls, danyo, critico) {
   const arena   = document.getElementById('arenaOverlay');
   const destino = document.querySelector('.' + cls);
   if (!arena || !destino) return;
 
-  // Posición relativa al overlay
   const rect  = destino.getBoundingClientRect();
   const aRect = arena.getBoundingClientRect();
   const x = rect.left - aRect.left + rect.width / 2;
@@ -860,12 +724,10 @@ function mostrarDanyoFlotante(cls, danyo, critico) {
   el.style.top  = y + 'px';
   arena.appendChild(el);
 
-  // Lo elimino tras la animación para no ensuciar el DOM
   setTimeout(() => el.remove(), 900);
 }
 
 
-/** Habilita o deshabilita los botones de acción del combate. */
 function bloquearBotones(bloquear) {
   document.querySelectorAll('#actionMoves button, #btnSwitch, #btnForfeit').forEach(b => {
     b.disabled = bloquear;
@@ -873,34 +735,24 @@ function bloquearBotones(bloquear) {
 }
 
 
-/** Promesa que espera n milisegundos. Uso esto en vez de callbacks anidados. */
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
-// ══════════════════════════════════════════════════════════════════════
-// SERIALIZACIÓN (para pasar los equipos por el canal)
-// Al enviar una unidad por BroadcastChannel hay que mandar SOLO datos
-// serializables. Estos helpers aplanan/rehidratan el objeto.
-// ══════════════════════════════════════════════════════════════════════
+// Serializacion para mandar los equipos por el canal
 
 function aplanarUnidad(u) {
-  // BroadcastChannel ya usa structured clone, así que en la práctica puedo
-  // mandar el objeto tal cual. Pero hago una copia "limpia" para no mandar
-  // referencias a cosas raras (funciones, elementos del DOM...).
+  // Copia limpia para no mandar referencias raras
   return JSON.parse(JSON.stringify(u));
 }
 
 function rehidratarUnidad(o) {
-  // Ya es un objeto plano — no necesito reconstruir nada, pero dejo este
-  // punto por si en el futuro hay que re-enlazar algo (por ejemplo, una
-  // referencia al catálogo del rival).
   return o;
 }
 
 
-/** Genera un "snapshot" del estado del combate para mandar al GUEST. */
+// Snapshot del estado para que el GUEST se sincronice
 function snapshotEstado() {
   return {
     equipoA: Combate.equipoYo.map(u  => ({ hp: u.hp, fainted: u.fainted, moves: u.moves.map(m => ({ pp: m.pp })) })),
@@ -911,25 +763,12 @@ function snapshotEstado() {
 }
 
 
-/**
- * Invierte el campo `lado` de un evento recibido del HOST.
- * El HOST etiqueta sus eventos con "A" = él y "B" = yo (GUEST).
- * Desde mi ventana, yo soy "A" y él es "B". Con este cambio, toda la
- * UI que mira ev.lado sigue funcionando sin saber si soy HOST o GUEST.
- *
- * También reemplazo las referencias a unidades (atacante, defensor,
- * sale, entra) por las unidades locales equivalentes, buscándolas por
- * "numero" (el id del Ibermon) en mis propios arrays. Sin esto, al
- * replayar, los sprites y nombres apuntarían a objetos del HOST y la
- * UI podría mostrar datos desincronizados.
- */
+// El HOST etiqueta sus eventos con A=el / B=yo. Los invierto y enlazo a mis instancias locales
 function invertirLadoEvento(ev) {
   const copia = { ...ev };
   if (copia.lado === 'A')      copia.lado = 'B';
   else if (copia.lado === 'B') copia.lado = 'A';
 
-  // Tras invertir, "A" = mi equipo, "B" = equipo del rival.
-  // Las unidades referenciadas las sustituyo por mis instancias locales.
   const miEquipo = copia.lado === 'A' ? Combate.equipoYo  : Combate.equipoFoe;
   const suEquipo = copia.lado === 'A' ? Combate.equipoFoe : Combate.equipoYo;
 
@@ -942,17 +781,15 @@ function invertirLadoEvento(ev) {
   return copia;
 }
 
-/** Busca una unidad por número en un array local. */
 function buscarLocal(equipo, numero) {
   return equipo.find(u => u.numero === numero);
 }
 
 
-/** Aplica un snapshot recibido del HOST al estado local (yo soy GUEST). */
+// Aplica el snapshot del HOST al estado local (yo soy GUEST)
 function aplicarSnapshot(s) {
   if (!s) return;
-  // OJO: el HOST envía "A" = su equipo, "B" = equipo del rival.
-  // Desde el punto de vista del GUEST, el orden está invertido.
+  // Para el HOST: A=su equipo, B=el mio. Para mi (GUEST) esta invertido
   s.equipoB.forEach((data, i) => {
     const u = Combate.equipoYo[i];
     if (!u) return;
@@ -967,14 +804,12 @@ function aplicarSnapshot(s) {
     u.fainted = data.fainted;
     data.moves.forEach((mv, j) => { if (u.moves[j]) u.moves[j].pp = mv.pp; });
   });
-  // HOST guarda sus índices con las claves "A/B" donde "A" es el propio HOST.
-  // Para mí (GUEST) eso se invierte: lo que él llama "B" soy yo, y viceversa.
   Combate.activoYo  = Combate.equipoYo[s.activoB ?? 0]  || Combate.equipoYo[0];
   Combate.activoFoe = Combate.equipoFoe[s.activoA ?? 0] || Combate.equipoFoe[0];
 }
 
 
-/** Genera el objeto estado que espera el motor Battle (claves A/B). */
+// Estado en formato A/B para el motor
 function estadoBattle() {
   return {
     equipoA: Combate.equipoYo,
@@ -985,10 +820,7 @@ function estadoBattle() {
 }
 
 
-// ══════════════════════════════════════════════════════════════════════
-// ERRORES FATALES — muestra un mensaje grande si algo falla al cargar.
-// ══════════════════════════════════════════════════════════════════════
-
+// Error fatal al cargar (sin catalogo no hay nada que hacer)
 function mostrarErrorFatal(msg) {
   const cont = document.querySelector('#screen-select');
   if (!cont) return;

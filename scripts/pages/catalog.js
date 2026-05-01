@@ -1,26 +1,12 @@
-/**
- * scripts/pages/catalog.js — Lógica del catálogo público
- *
- * Esta página tiene dos modos de vista:
- * - "normal": tarjetas visuales (ibermon, movimientos, ítems, logros)
- * - "api":    visor JSON tipo Swagger/Postman para explorar los endpoints
- *
- * El usuario puede cambiar de modo con las pestañas y filtrar con el buscador.
- * Los datos se cachean en memoria para no repetir llamadas a la API.
- */
+// Catalogo publico: dos modos (tarjetas / visor JSON)
 
-
-// Estado de la página
-// Uso variables sueltas en lugar de un objeto porque son simples
-// y se cambian desde múltiples funciones del mismo archivo.
-let currentSection = 'ibermon';   // sección activa: ibermon | movimientos | items | logros
-let currentMode    = 'normal';    // modo de vista: normal | api
-let currentFilter  = '';          // texto del buscador (en minúsculas)
-let allData        = {};          // caché de datos — evita llamadas repetidas a la API
+let currentSection = 'ibermon';   // ibermon | movimientos | items | logros
+let currentMode    = 'normal';    // normal | api
+let currentFilter  = '';
+let allData        = {};
 
 
 // Endpoints disponibles en el modo API
-// Los defino aquí para que sean fáciles de ampliar si la API crece.
 const ENDPOINTS = [
   { method: 'GET', path: '/catalogo/ibermon',              label: 'Listar Ibermon',       section: 'ibermon' },
   { method: 'GET', path: '/catalogo/ibermon/{numero}',     label: 'Detalle Ibermon',      section: 'ibermon',     hasParam: true, paramHint: 'numero (ej: 1)' },
@@ -32,12 +18,11 @@ const ENDPOINTS = [
   { method: 'GET', path: '/catalogo/logros/{codigo}',      label: 'Detalle Logro',        section: 'logros',      hasParam: true, paramHint: 'codigo (ej: captura_1)' },
 ];
 
-let activeEndpointIdx = 0;  // qué endpoint está seleccionado en el modo API
+let activeEndpointIdx = 0;
 
 
-// Inicialización
 document.addEventListener('DOMContentLoaded', () => {
-  // Si la URL tiene ?modo=api, activo el modo API directamente
+  // ?modo=api activa el modo API directamente
   const params = new URLSearchParams(window.location.search);
   if (params.get('modo') === 'api') currentMode = 'api';
 
@@ -47,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAll();
 });
 
-/** Conecta los botones de modo (Normal / API) */
 function initModeSwitch() {
   document.querySelectorAll('[data-mode]').forEach(btn => {
     if (btn.dataset.mode === currentMode) btn.classList.add('active');
@@ -60,7 +44,6 @@ function initModeSwitch() {
   });
 }
 
-/** Conecta las pestañas de sección (Ibermon / Movimientos / Ítems / Logros) */
 function initSectionTabs() {
   document.querySelectorAll('[data-section]').forEach(btn => {
     if (btn.dataset.section === currentSection) btn.classList.add('active');
@@ -76,7 +59,7 @@ function initSectionTabs() {
   });
 }
 
-/** Conecta el buscador — solo actúa en modo normal */
+// Solo actua en modo normal
 function initSearchBar() {
   const searchEl = document.getElementById('catalogSearch');
   if (!searchEl) return;
@@ -87,8 +70,6 @@ function initSearchBar() {
 }
 
 
-// Render principal
-/** Decide qué vista renderizar según el modo activo */
 function renderAll() {
   const normalView = document.getElementById('normalView');
   const apiView    = document.getElementById('apiView');
@@ -109,18 +90,14 @@ function renderAll() {
 }
 
 
-// Modo normal: tarjetas visuales
+// Modo normal: tarjetas
 
-/**
- * Carga los datos de la sección activa (si no están ya en caché)
- * y renderiza las tarjetas correspondientes.
- */
 async function renderNormal() {
   const container = document.getElementById('normalView');
   container.innerHTML = loadingHTML();
 
   try {
-    // Si no tengo datos en caché para esta sección, los pido a la API
+    // Pido los datos solo si no estan en cache
     if (!allData[currentSection]) {
       switch (currentSection) {
         case 'ibermon':     allData.ibermon     = await CatalogAPI.ibermon();     break;
@@ -151,7 +128,6 @@ async function renderNormal() {
     return;
   }
 
-  // Renderizo según la sección activa
   switch (currentSection) {
     case 'ibermon':     container.innerHTML = renderIbermonGrid(filtered);      break;
     case 'movimientos': container.innerHTML = renderMovimientosTable(filtered); break;
@@ -159,18 +135,17 @@ async function renderNormal() {
     case 'logros':      container.innerHTML = renderLogrosGrid(filtered);       break;
   }
 
-  // Añado el evento de clic en las tarjetas de Ibermon para abrir el modal
+  // Click en tarjeta de Ibermon: abre el modal de detalle
   if (currentSection === 'ibermon') {
     container.querySelectorAll('.ibermon-card').forEach(card => {
       card.addEventListener('click', () => openIbermonModal(parseInt(card.dataset.num)));
     });
   }
 
-  // Animo las barras de stats con un pequeño delay para que la transición CSS sea visible
+  // Anima las barras de stats con un pequenyo delay para que la transicion CSS se vea
   setTimeout(animateStatBars, 50);
 }
 
-/** Filtra los datos por el texto del buscador */
 function filterData(data) {
   if (!currentFilter) return data;
   return data.filter(d => {
@@ -180,9 +155,8 @@ function filterData(data) {
 }
 
 
-// Renderizadores de cada sección
+// Renderizadores por seccion
 
-/** Grid de tarjetas de Ibermon */
 function renderIbermonGrid(list) {
   return `<div class="ibermon-grid">
     ${list.map(ib => `
@@ -198,7 +172,6 @@ function renderIbermonGrid(list) {
   </div>`;
 }
 
-/** Tabla de movimientos — uso tabla porque hay muchas columnas */
 function renderMovimientosTable(list) {
   return `
   <div class="card" style="overflow:hidden">
@@ -237,7 +210,6 @@ function renderMovimientosTable(list) {
   </div>`;
 }
 
-/** Grid de tarjetas de ítems */
 function renderItemsGrid(list) {
   return `<div class="grid-3" style="gap:1rem">
     ${list.map(item => `
@@ -254,7 +226,6 @@ function renderItemsGrid(list) {
   </div>`;
 }
 
-/** Grid de tarjetas de logros */
 function renderLogrosGrid(list) {
   return `<div class="grid-2" style="gap:1rem">
     ${list.map(l => `
@@ -269,7 +240,6 @@ function renderLogrosGrid(list) {
   </div>`;
 }
 
-/** Emoji por categoría de ítem */
 function getItemEmoji(cat) {
   const map = { Pokeball: '⚾', Curación: '💊', Rareza: '✨', Combate: '⚔️', Revivir: '💚', Otro: '📦' };
   return map[cat] || '🎒';
@@ -278,7 +248,6 @@ function getItemEmoji(cat) {
 
 // Modal de detalle de Ibermon
 
-/** Abre el modal y carga el detalle completo del Ibermon */
 async function openIbermonModal(numero) {
   const overlay = document.getElementById('ibermonModal');
   const body    = document.getElementById('ibermonModalBody');
@@ -298,7 +267,6 @@ async function openIbermonModal(numero) {
   }
 }
 
-/** Genera el HTML del contenido del modal de detalle */
 function renderIbermonDetail(ib) {
   const stats = [
     { label: 'HP',     val: ib.hp_base },
@@ -350,7 +318,7 @@ function renderIbermonDetail(ib) {
   </div>`;
 }
 
-/** Anima las barras de stats desde 0% hasta su valor real */
+// 0% -> valor real con transicion CSS
 function animateStatBars() {
   document.querySelectorAll('.stat-bar-fill[data-target]').forEach(bar => {
     bar.style.width = bar.dataset.target + '%';
@@ -358,9 +326,8 @@ function animateStatBars() {
 }
 
 
-// Modo API: visor de endpoints tipo Swagger
+// Modo API: visor de endpoints
 
-/** Construye el layout de dos columnas con la lista de endpoints y el visor */
 function renderApiMode() {
   const container = document.getElementById('apiView');
   if (!container) return;
@@ -395,7 +362,6 @@ function renderApiMode() {
     </main>
   </div>`;
 
-  // Genero los items de la lista de endpoints
   const list = document.getElementById('endpointList');
   ENDPOINTS.forEach((ep, i) => {
     const item = document.createElement('div');
@@ -409,7 +375,6 @@ function renderApiMode() {
   selectEndpoint(activeEndpointIdx);
 }
 
-/** Actualiza la UI al seleccionar un endpoint del sidebar */
 function selectEndpoint(i) {
   activeEndpointIdx = i;
   const ep = ENDPOINTS[i];
@@ -422,7 +387,7 @@ function selectEndpoint(i) {
 
   urlText.textContent = `${CONFIG.API_BASE}${ep.path}`;
 
-  // Si el endpoint tiene un parámetro variable ({numero}), muestro el campo de input
+  // Si tiene parametro variable ({numero}), muestro el campo
   if (ep.hasParam) {
     paramWrap.style.display = 'block';
     document.getElementById('apiParamHint').textContent  = ep.paramHint || '';
@@ -431,14 +396,13 @@ function selectEndpoint(i) {
     paramWrap.style.display = 'none';
   }
 
-  // Reseteo el área de respuesta
+  // Reseteo el area de respuesta
   document.getElementById('apiStatusText').textContent = '—';
   document.getElementById('apiStatusText').className   = 'status';
   document.getElementById('apiTimingText').textContent = '';
   document.getElementById('apiJsonBody').innerHTML     = '<span style="color:var(--text-muted)">Pulsa ▶ Ejecutar para ver la respuesta</span>';
 }
 
-/** Ejecuta el endpoint seleccionado y muestra la respuesta JSON */
 async function executeEndpoint() {
   const ep = ENDPOINTS[activeEndpointIdx];
   let path = ep.path;
@@ -449,7 +413,6 @@ async function executeEndpoint() {
       document.getElementById('apiJsonBody').innerHTML = '<span style="color:var(--red)">⚠ Introduce un valor para el parámetro</span>';
       return;
     }
-    // Sustituyo el placeholder {numero} por el valor introducido
     path = ep.path.replace(/\{[^}]+\}/, val);
   }
 
@@ -466,25 +429,20 @@ async function executeEndpoint() {
 }
 
 
-// Helpers
-
-/** HTML del spinner de carga */
 function loadingHTML() {
   return `<div class="loading-state"><div class="spinner"></div><div>Cargando datos...</div></div>`;
 }
 
 
-// Eventos de cierre de modales
+// Cierre de modales
 document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('ibermonModal');
   if (!overlay) return;
 
-  // Cerrar al hacer clic fuera del modal
   overlay.addEventListener('click', e => {
     if (e.target === overlay) overlay.classList.remove('open');
   });
 
-  // Cerrar con el botón X
   document.getElementById('ibermonModalClose')?.addEventListener('click', () => {
     overlay.classList.remove('open');
   });
