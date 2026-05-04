@@ -10,7 +10,7 @@
 
 <div id="navbar"></div>
 
-<!-- ═══ CABECERA DE PÁGINA ═══ -->
+<!-- Cabecera de pagina -->
 <div class="page-header">
   <div class="container">
     <span class="section-label">Panel de Entrenador</span>
@@ -23,9 +23,7 @@
 <main class="section-sm">
   <div class="container">
 
-    <!-- ── Hero de bienvenida ──
-         dashboard.js rellena dashUser y dashEmail con los datos de Auth.getUser()
-         ──────────────────────── -->
+    <!-- Hero de bienvenida; dashboard.js rellena dashUser y dashEmail -->
     <div class="dashboard-hero mb-4">
       <div class="dashboard-avatar">🎮</div>
       <div>
@@ -35,9 +33,7 @@
     </div>
 
 
-    <!-- ── Resumen de estadísticas ──
-         Los 4 contadores que dashboard.js rellena con updateStats()
-         ──────────────────────────── -->
+    <!-- Resumen de estadisticas; dashboard.js rellena los contadores -->
     <div class="grid-4 gap-2 mb-4">
       <div class="card card-body text-center">
         <div style="font-family:var(--font-pixel);font-size:1.5rem;color:var(--blue);margin-bottom:.35rem"
@@ -62,7 +58,7 @@
     </div>
 
 
-    <!-- ── Cabecera de la lista ── -->
+    <!-- Cabecera de la lista -->
     <div class="flex-between mb-3" style="flex-wrap:wrap;gap:.75rem">
       <h2 style="font-family:var(--font-pixel);font-size:.7rem;color:var(--text)">
         Partidas guardadas
@@ -72,9 +68,7 @@
     </div>
 
 
-    <!-- ── Lista de partidas ──
-         dashboard.js rellena este contenedor con las tarjetas
-         ──────────────────── -->
+    <!-- dashboard.js rellena este contenedor con las tarjetas -->
     <div id="partidasContainer">
       <div class="loading-state">
         <div class="spinner"></div>
@@ -83,7 +77,7 @@
     </div>
 
 
-    <!-- ── Nota informativa ── -->
+    <!-- Nota informativa -->
     <div class="alert alert-info mt-4" style="display:flex;align-items:flex-start;gap:.75rem">
       <span style="font-size:1rem;flex-shrink:0">ℹ️</span>
       <div style="font-size:.82rem">
@@ -96,10 +90,7 @@
 </main>
 
 
-<!-- ═══ MODAL DE CONFIRMACIÓN DE BORRADO ═══
-     Se abre cuando el usuario hace clic en "Eliminar".
-     dashboard.js gestiona el evento de confirmación.
-     ════════════════════════════════════════ -->
+<!-- Modal de borrado; dashboard.js gestiona la confirmacion -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal-box" style="max-width:400px">
     <div class="modal-header">

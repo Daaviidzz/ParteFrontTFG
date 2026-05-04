@@ -10,7 +10,7 @@
 
 <div id="navbar"></div>
 
-<!-- ═══ CABECERA DE PÁGINA ═══ -->
+<!-- Cabecera de pagina -->
 <div class="page-header">
   <div class="container">
     <div class="page-header-inner">
@@ -22,11 +22,7 @@
 </div>
 
 
-<!-- ═══ BARRA DE CONTROLES (sticky) ═══
-     La pongo sticky para que las pestañas siempre sean accesibles
-     aunque el usuario haga scroll hacia abajo en el catálogo.
-     top:60px deja espacio para el navbar que también es sticky.
-     ══════════════════════════════════ -->
+<!-- Barra sticky; top 60px deja hueco al navbar -->
 <div style="background:var(--bg-surface);border-bottom:1px solid var(--border);padding:1rem 0;position:sticky;top:60px;z-index:500">
   <div class="container">
     <div class="flex-between gap-2" style="flex-wrap:wrap">
@@ -49,7 +45,7 @@
 </div>
 
 
-<!-- ═══ CONTENIDO PRINCIPAL ═══ -->
+<!-- Contenido principal -->
 <main class="section-sm">
   <div class="container">
 
@@ -70,10 +66,7 @@
 </main>
 
 
-<!-- ═══ MODAL DE DETALLE DE IBERMON ═══
-     Al hacer clic en una card, se abre este modal con los stats completos.
-     catalog.js se encarga de llenarlo con los datos de la API.
-     ════════════════════════════════ -->
+<!-- Modal de detalle; catalog.js lo rellena con datos de la API -->
 <div class="modal-overlay" id="ibermonModal">
   <div class="modal-box">
     <div class="modal-header">

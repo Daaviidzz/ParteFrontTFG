@@ -5,31 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ibermon — RPG Ibérico</title>
 
-  <!--
-    main.css importa todos los CSS del proyecto en el orden correcto.
-    Así solo necesito un <link> aquí en vez de 7.
-  -->
   <link rel="stylesheet" href="styles/main.css">
 
-  <!-- Favicon SVG inline para no necesitar un archivo externo -->
+  <!-- Favicon SVG inline para no necesitar un archivo -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%23e63946'/><text x='16' y='22' text-anchor='middle' font-size='16'>⬡</text></svg>">
 </head>
 <body>
 
-<!-- nav.js inyecta aquí el navbar completo al cargar la página -->
+<!-- nav.js rellena este div -->
 <div id="navbar"></div>
 
 
-<!-- ═══════════════════════ HERO ═══════════════════════
-     La primera sección que se ve. Ocupa toda la pantalla.
-     El contenido visual (pokeball) es decorativo, el texto
-     y los botones son lo importante.
-     ═══════════════════════════════════════════════════ -->
+<!-- Hero -->
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
 
-  <!-- Pokeball decorativa de fondo — aria-hidden para que los lectores de pantalla la ignoren -->
+  <!-- Pokeball decorativa de fondo -->
   <div class="hero-visual" aria-hidden="true">
     <div style="position:relative;width:min(460px,45vw);height:min(460px,45vw)">
       <div style="position:absolute;inset:0;border-radius:50%;border:2px solid var(--red);opacity:.1;animation:spin-slow 30s linear infinite"></div>
@@ -66,9 +58,7 @@
 </section>
 
 
-<!-- ═══════════════════════ STATS BANNER ═══════════════════════
-     Cuatro datos clave del proyecto en una franja horizontal.
-     ═══════════════════════════════════════════════════════════ -->
+<!-- Stats banner -->
 <section style="background:var(--bg-surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem 0">
   <div class="container">
     <div class="grid-4" style="text-align:center;gap:1rem">
@@ -93,10 +83,7 @@
 </section>
 
 
-<!-- ═══════════════════════ FEATURES ═══════════════════════
-     Las 6 tarjetas que explican las características del juego.
-     Las clases animate-fade-up les dan la animación de entrada.
-     ══════════════════════════════════════════════════════ -->
+<!-- Features -->
 <section class="section">
   <div class="container">
     <div class="text-center mb-4">
@@ -140,10 +127,7 @@
 </section>
 
 
-<!-- ═══════════════════════ PREVIEW DEL CATÁLOGO ═══════════════════════
-     Los primeros 8 Ibermon cargados desde la API.
-     index.js se encarga de llenar el grid con los datos reales.
-     ══════════════════════════════════════════════════════════════════ -->
+<!-- Preview del catalogo (los primeros 8 Ibermon) -->
 <section class="section" style="background:var(--bg-surface);border-top:1px solid var(--border)">
   <div class="container">
     <div class="flex-between mb-4" style="flex-wrap:wrap;gap:1rem">
@@ -154,7 +138,6 @@
       </div>
       <a href="catalogo.html" class="btn btn-ghost">Ver todos →</a>
     </div>
-    <!-- El spinner es el placeholder mientras index.js carga los datos -->
     <div class="ibermon-grid" id="heroIbermonGrid" style="max-width:100%">
       <div class="loading-state" style="grid-column:1/-1"><div class="spinner"></div></div>
     </div>
@@ -162,9 +145,7 @@
 </section>
 
 
-<!-- ═══════════════════════ CTA REGISTRO ═══════════════════════
-     Invitación a crear una cuenta para ver el dashboard.
-     ════════════════════════════════════════════════════════ -->
+<!-- CTA registro -->
 <section class="section">
   <div class="container">
     <div class="card card-body text-center" style="max-width:640px;margin:0 auto;
@@ -187,19 +168,11 @@
 </section>
 
 
-<!-- nav.js inyecta aquí el footer -->
+<!-- nav.js rellena este div -->
 <div id="footer"></div>
 
 
-<!--
-  Orden de carga de scripts — IMPORTANTE:
-  1. config.js   → CONFIG, TIPOS y helpers (lo necesitan todos los demás)
-  2. api.js      → apiFetch, AuthAPI, CatalogAPI, PartidaAPI
-  3. auth.js     → Auth object (lo usa nav.js)
-  4. nav.js      → navbar y footer (necesita Auth y CONFIG)
-  5. chatbot.js  → IberBot (necesita CONFIG y los helpers de config.js)
-  6. index.js    → lógica específica de esta página (necesita CatalogAPI)
--->
+<!-- Orden importa: config -> api -> auth -> nav -> chatbot -> index -->
 <script src="scripts/modules/config.js"></script>
 <script src="scripts/api/api.js"></script>
 <script src="scripts/modules/auth.js"></script>
