@@ -1,28 +1,15 @@
-/* ============================================================
-   main.css — Punto de entrada del CSS
-   ============================================================
+/* Punto de entrada del CSS. Solo @imports, sin estilos propios */
 
-   Este archivo NO tiene estilos propios. Solo importa los demás
-   archivos en el orden correcto. Esto es importante porque:
-   1. Las variables tienen que cargarse antes que todo lo demás
-   2. Los componentes tienen que cargarse antes que las páginas
-      (para que las páginas puedan sobreescribirlos si hace falta)
-
-   Cada HTML solo necesita incluir este archivo y ya tiene todo.
-   ============================================================ */
-
-/* Primero las variables y el reset — base de todo lo demás */
+/* Variables y reset primero */
 @import './variables.css';
 
-/* Después los componentes reutilizables */
+/* Componentes reutilizables */
 @import './components.css';
 
-/* El chatbot en su propio archivo porque tiene muchos estilos */
+/* Chatbot */
 @import './chatbot.css';
 
-/* Por último los estilos específicos de cada página
-   (se importan todos aunque la página actual no los use —
-   los archivos son pequeños y el impacto en rendimiento es mínimo) */
+/* Estilos especificos por pagina */
 @import './pages/index.css';
 @import './pages/catalogo.css';
 @import './pages/dashboard.css';

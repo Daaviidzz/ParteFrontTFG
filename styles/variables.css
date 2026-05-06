@@ -1,74 +1,52 @@
-/* ============================================================
-   variables.css — Variables globales, reset y tipografía base
-   ============================================================
+/* Variables globales, reset y tipografia base */
 
-   Este archivo es lo primero que carga el CSS.
-   Aquí pongo todas las variables de color, fuentes y tamaños
-   en un solo sitio, porque si en el futuro quiero cambiar el
-   color principal solo tengo que cambiarlo aquí y se aplica
-   en toda la web automáticamente. Es lo mismo que las
-   constantes de configuración en programación.
-   ============================================================ */
-
-/* Importo las fuentes de Google:
-   - "Press Start 2P" para el estilo píxel retro
-   - "Inter" para el texto normal, es muy legible en pantalla */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap');
 
 
-/* ── Variables globales ──────────────────────────────────────
-   Las pongo en :root para que estén disponibles en todo el CSS.
-   Así si el cliente quiere cambiar el azul de los botones,
-   solo cambio --blue aquí en vez de buscar en 50 sitios.
-   ─────────────────────────────────────────────────────────── */
 :root {
-  /* Fondos — van de más oscuro a más claro, así el diseño tiene profundidad */
-  --bg-deep:    #060610;  /* el más oscuro, para fondos de elementos flotantes */
-  --bg-primary: #0d0d1a;  /* fondo principal de la página */
-  --bg-surface: #131326;  /* secciones con fondo ligeramente diferente */
-  --bg-card:    #1a1a2e;  /* fondo de las tarjetas */
-  --bg-card-h:  #21213f;  /* hover de tarjeta */
+  /* Fondos: de mas oscuro a mas claro */
+  --bg-deep:    #060610;
+  --bg-primary: #0d0d1a;
+  --bg-surface: #131326;
+  --bg-card:    #1a1a2e;
+  --bg-card-h:  #21213f;
 
-  /* Bordes — el -b es más brillante para resaltar elementos activos */
+  /* Bordes */
   --border:   #2a2a4a;
   --border-b: #4444aa;
 
-  /* Colores de acento — uno por "categoría" para que sea fácil recordarlos */
-  --red:        #e63946;  /* acciones peligrosas, Ibermon tipo Fuego, botón primario */
+  /* Colores de acento */
+  --red:        #e63946;
   --red-dark:   #c1121f;
-  --red-glow:   rgba(230, 57, 70, .35);   /* para box-shadow con color */
-  --blue:       #4cc9f0;  /* información, tipo Agua, enlaces */
+  --red-glow:   rgba(230, 57, 70, .35);
+  --blue:       #4cc9f0;
   --blue-dark:  #3a86ff;
   --blue-glow:  rgba(76, 201, 240, .25);
-  --yellow:     #f9c74f;  /* advertencias, nombres de usuario, medallas */
+  --yellow:     #f9c74f;
   --yellow-glow:rgba(249, 199, 79, .25);
-  --green:      #06d6a0;  /* éxito, stats altas, capturados */
-  --purple:     #9d4edd;  /* tipo Fantasma, detalles decorativos */
+  --green:      #06d6a0;
+  --purple:     #9d4edd;
 
-  /* Texto — tres niveles para la jerarquía visual */
-  --text:       #f1faee;  /* texto principal, bien legible sobre fondo oscuro */
-  --text-dim:   #8da9c4;  /* texto secundario, descripciones */
-  --text-muted: #4d5d80;  /* texto terciario, placeholders, notas */
+  /* Texto */
+  --text:       #f1faee;
+  --text-dim:   #8da9c4;
+  --text-muted: #4d5d80;
 
   /* Fuentes */
-  --font-pixel: 'Press Start 2P', monospace;  /* para títulos y elementos retro */
-  --font-main:  'Inter', sans-serif;          /* para texto general */
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-main:  'Inter', sans-serif;
 
   /* Medidas */
-  --radius:    8px;   /* bordes redondeados estándar */
-  --radius-lg: 16px;  /* tarjetas y modales más grandes */
+  --radius:    8px;
+  --radius-lg: 16px;
 
   /* Sombras y transiciones */
   --shadow-card: 0 4px 24px rgba(0, 0, 0, .5);
-  --transition:  all .25s ease;  /* duración estándar para hover y animaciones */
+  --transition:  all .25s ease;
 }
 
 
-/* ── Reset básico ────────────────────────────────────────────
-   Elimino los estilos por defecto del navegador para tener
-   control total. box-sizing: border-box es lo más importante
-   porque hace que el padding no desborde el ancho del elemento.
-   ─────────────────────────────────────────────────────────── */
+/* Reset basico */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -76,7 +54,7 @@
 }
 
 html {
-  scroll-behavior: smooth;  /* scroll suave al hacer clic en anclas */
+  scroll-behavior: smooth;
 }
 
 body {
@@ -85,42 +63,34 @@ body {
   color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
-  overflow-x: hidden;  /* evita el scroll horizontal en móvil */
+  overflow-x: hidden;
 }
 
-/* Quito la decoración de los enlaces — aplico estilos manualmente donde necesite */
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* Las imágenes no deben salirse de su contenedor */
 img {
   max-width: 100%;
   display: block;
 }
 
-/* Los botones usan la fuente de la web, no la del sistema */
 button {
   cursor: pointer;
   font-family: var(--font-main);
 }
 
-/* Los inputs también heredan la fuente */
 input, textarea, select {
   font-family: var(--font-main);
 }
 
 
-/* ── Clases de utilidad de tipografía ────────────────────────
-   Las pongo aquí porque son muy genéricas y se usan en todas
-   las páginas. No tienen relación con ningún componente específico.
-   ─────────────────────────────────────────────────────────── */
+/* Utilidades de tipografia */
 .font-pixel { font-family: var(--font-pixel); }
 
 h1, h2, h3 { line-height: 1.2; }
 
-/* Clases de color de texto — las uso mucho en el HTML inline */
 .text-dim    { color: var(--text-dim); }
 .text-muted  { color: var(--text-muted); }
 .text-red    { color: var(--red); }

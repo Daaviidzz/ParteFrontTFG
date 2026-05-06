@@ -1,27 +1,16 @@
-/* ============================================================
-   pages/index.css — Estilos específicos de la landing (index.html)
-   ============================================================
-
-   Solo pongo aquí lo que es exclusivo de la página principal:
-   el hero animado, los feature cards y nada más.
-   El resto de componentes que usa la landing (botones, navbar,
-   sección de catálogo preview) ya vienen de components.css.
-   ============================================================ */
+/* Landing: hero animado y feature cards */
 
 
-/* ── SECCIÓN HERO ────────────────────────────────────────────
-   La primera sección que se ve al entrar. Ocupa toda la pantalla
-   de altura para dar una primera impresión impactante.
-   ─────────────────────────────────────────────────────────── */
+/* Hero (primera seccion, ocupa la pantalla) */
 .hero {
   position: relative;
   overflow: hidden;
-  min-height: calc(100vh - 60px);  /* 60px es la altura del navbar */
+  min-height: calc(100vh - 60px);
   display: flex;
   align-items: center;
 }
 
-/* El fondo con los degradados radiales — da la sensación de "aura" */
+/* Fondo con degradados radiales */
 .hero-bg {
   position: absolute;
   inset: 0;
@@ -32,7 +21,7 @@
     linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
 }
 
-/* La cuadrícula de fondo tipo "tron" — da el look sci-fi */
+/* Cuadricula tipo "tron" */
 .hero-grid {
   position: absolute;
   inset: 0;
@@ -43,14 +32,13 @@
   opacity: .25;
 }
 
-/* El contenido del hero necesita z-index para estar por encima del fondo */
 .hero-content {
   position: relative;
   z-index: 1;
   max-width: 640px;
 }
 
-/* Pequeña etiqueta sobre el título principal */
+/* Etiqueta sobre el titulo */
 .hero-eyebrow {
   font-family: var(--font-pixel);
   font-size: .55rem;
@@ -62,16 +50,15 @@
   animation: fade-up .6s ease both;
 }
 
-/* El título principal con tamaño fluido para adaptarse a cualquier pantalla */
+/* Titulo con tamanyo fluido */
 .hero-title {
   font-family: var(--font-pixel);
   font-size: clamp(1.5rem, 5vw, 3rem);
   line-height: 1.4;
   margin-bottom: 1.25rem;
-  animation: fade-up .7s .1s ease both;  /* delay para que aparezca después del eyebrow */
+  animation: fade-up .7s .1s ease both;
 }
 
-/* La palabra resaltada en rojo con resplandor */
 .hero-title .accent {
   color: var(--red);
   text-shadow: 0 0 40px var(--red-glow);
@@ -86,7 +73,6 @@
   animation: fade-up .7s .2s ease both;
 }
 
-/* Los botones CTA también aparecen con delay escalonado */
 .hero-cta {
   display: flex;
   gap: 1rem;
@@ -94,7 +80,7 @@
   animation: fade-up .7s .3s ease both;
 }
 
-/* El elemento visual (pokeball) a la derecha — decorativo, sin funcionalidad */
+/* Pokeball decorativa a la derecha */
 .hero-visual {
   position: absolute;
   right: 0;
@@ -104,7 +90,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;  /* no interfiere con los clics */
+  pointer-events: none;
 }
 
 .hero-pokeball {
@@ -130,10 +116,7 @@
 }
 
 
-/* ── FEATURE CARDS ───────────────────────────────────────────
-   Las 6 tarjetas de características de la landing.
-   El ::before crea el borde superior de color que aparece en hover.
-   ─────────────────────────────────────────────────────────── */
+/* Feature cards */
 .feature-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -144,7 +127,7 @@
   overflow: hidden;
 }
 
-/* El borde coloreado empieza invisible y aparece en hover */
+/* Borde superior de color que aparece en hover */
 .feature-card::before {
   content: '';
   position: absolute;
@@ -163,17 +146,14 @@
 .feature-icon {
   font-size: 2rem;
   margin-bottom: 1rem;
-  filter: drop-shadow(0 0 8px currentColor);  /* el icono brilla con su propio color */
+  filter: drop-shadow(0 0 8px currentColor);
 }
 
 .feature-title { font-family: var(--font-pixel); font-size: .65rem; color: var(--text); margin-bottom: .75rem; }
 .feature-desc  { font-size: .9rem; color: var(--text-dim); line-height: 1.6; }
 
 
-/* ── Responsive de la landing ────────────────────────────────
-   En móvil el hero se hace más pequeño y el visual decorativo
-   desaparece para no tapar el texto.
-   ─────────────────────────────────────────────────────────── */
+/* Responsive */
 @media (max-width: 768px) {
   .hero        { min-height: auto; padding: 4rem 0 3rem; }
   .hero-visual { display: none; }

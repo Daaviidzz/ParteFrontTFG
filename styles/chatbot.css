@@ -1,18 +1,7 @@
-/* ============================================================
-   chatbot.css — Estilos del IberBot
-   ============================================================
-
-   Separé el chatbot en su propio archivo porque tiene muchos
-   estilos específicos y juntar todo en components.css lo haría
-   difícil de mantener. Así si alguien quiere buscar algo del
-   chatbot sabe exactamente dónde mirar.
-   ============================================================ */
+/* Estilos del IberBot */
 
 
-/* ── Botón flotante ──────────────────────────────────────────
-   El botón rojo 🤖 que siempre está visible abajo a la derecha.
-   El pulse-glow lo hace parpadear suavemente para llamar la atención.
-   ─────────────────────────────────────────────────────────── */
+/* Boton flotante (siempre visible abajo a la derecha) */
 #chatbot-toggle {
   position: fixed;
   bottom: 1.5rem;
@@ -36,10 +25,7 @@
 #chatbot-toggle:hover { transform: scale(1.1); }
 
 
-/* ── Panel del chat ──────────────────────────────────────────
-   El panel flotante que aparece al hacer clic en el botón.
-   Oculto por defecto, JS añade la clase .open para mostrarlo.
-   ─────────────────────────────────────────────────────────── */
+/* Panel del chat (oculto por defecto, JS le anyade .open) */
 #chatbot-panel {
   position: fixed;
   bottom: 5rem;
@@ -60,7 +46,7 @@
 #chatbot-panel.open { display: flex; }
 
 
-/* ── Cabecera del panel ───────────────────────────────────── */
+/* Cabecera del panel */
 .chatbot-head {
   padding: .85rem 1rem;
   background: linear-gradient(135deg, var(--bg-surface), var(--bg-card));
@@ -84,7 +70,6 @@
 .chatbot-name   { font-family: var(--font-pixel); font-size: .55rem; color: var(--text); }
 .chatbot-status { font-size: .7rem; color: var(--green); }
 
-/* El botón de cerrar — empujado al final con margin-left auto */
 #chatbot-close {
   margin-left: auto;
   background: none;
@@ -100,10 +85,7 @@
 #chatbot-close:hover { color: var(--text); background: var(--bg-card-h); }
 
 
-/* ── Área de mensajes ────────────────────────────────────────
-   Flex con dirección column para que los mensajes se apilen
-   de arriba hacia abajo. El overflow-y permite scroll.
-   ─────────────────────────────────────────────────────────── */
+/* Area de mensajes (scrollable) */
 .chatbot-messages {
   flex: 1;
   overflow-y: auto;
@@ -113,7 +95,6 @@
   gap: .6rem;
 }
 
-/* Cada mensaje tiene un ancho máximo para no ocupar toda la línea */
 .chat-msg {
   max-width: 85%;
   padding: .55rem .85rem;
@@ -125,15 +106,15 @@
 
 .chat-msg a { color: var(--blue); text-decoration: underline; }
 
-/* Los mensajes del bot van alineados a la izquierda */
+/* Mensajes del bot a la izquierda */
 .chat-msg.bot {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-bottom-left-radius: 3px;  /* esquina cuadrada para indicar el "origen" */
+  border-bottom-left-radius: 3px;
   align-self: flex-start;
 }
 
-/* Los mensajes del usuario van a la derecha, en rojo */
+/* Mensajes del usuario a la derecha */
 .chat-msg.user {
   background: var(--red);
   color: #fff;
@@ -142,10 +123,7 @@
 }
 
 
-/* ── Respuestas rápidas (Quick Replies) ──────────────────────
-   Los botoncitos de acceso rápido debajo de los mensajes.
-   Desaparecen cuando el usuario ya escribe algo.
-   ─────────────────────────────────────────────────────────── */
+/* Quick replies */
 .chatbot-quick {
   padding: .5rem .75rem;
   display: flex;
@@ -172,9 +150,7 @@
 }
 
 
-/* ── Input de texto ──────────────────────────────────────────
-   La caja donde el usuario escribe y el botón de enviar.
-   ─────────────────────────────────────────────────────────── */
+/* Input de texto y boton enviar */
 .chatbot-input {
   display: flex;
   gap: .5rem;
@@ -207,11 +183,7 @@
 .chatbot-input button:hover { background: var(--red-dark); }
 
 
-/* ── Tarjetas de resultado del bot ───────────────────────────
-   Cuando el bot devuelve datos de la API, los muestra en estas
-   tarjetas compactas dentro de los mensajes. Imité el estilo
-   de una pokedex para que sea reconocible.
-   ─────────────────────────────────────────────────────────── */
+/* Tarjetas de resultado del bot */
 .ibot-card {
   background: var(--bg-deep);
   border: 1px solid var(--border-b);
@@ -242,7 +214,7 @@
   padding-left: .5rem;
 }
 
-/* Las barras de stats en miniatura dentro del chatbot */
+/* Barras de stats en miniatura */
 .ibot-stats        { display: flex; flex-direction: column; gap: .2rem; margin: .4rem 0; }
 .ibot-stat-row     { display: flex; align-items: center; gap: .4rem; font-size: .72rem; }
 .ibot-stat-label   { color: var(--text-muted); width: 2.5rem; flex-shrink: 0; font-family: var(--font-pixel); font-size: .42rem; }
@@ -250,7 +222,6 @@
 .ibot-stat-bar     { flex: 1; height: 6px; background: var(--bg-surface); border-radius: 3px; overflow: hidden; }
 .ibot-stat-fill    { height: 100%; border-radius: 3px; transition: width .4s ease; }
 
-/* Los mismos colores que las barras del catálogo */
 .ibot-stat-fill.stat-low   { background: var(--red); }
 .ibot-stat-fill.stat-mid   { background: var(--yellow); }
 .ibot-stat-fill.stat-high  { background: var(--green); }
@@ -268,7 +239,6 @@
 .ibot-row   { display: flex; justify-content: space-between; font-size: .75rem; color: var(--text-dim); }
 .ibot-label { color: var(--text-muted); }
 
-/* Enlace "Ver en catálogo" al final de la tarjeta */
 .ibot-link {
   display: inline-block;
   margin-top: .5rem;
@@ -279,10 +249,7 @@
 .ibot-link:hover { text-decoration: underline; }
 
 
-/* ── Nota de corrección difusa ───────────────────────────────
-   Cuando el bot sugiere "¿quisiste decir X?" porque el
-   nombre tenía una errata, aparece este aviso amarillo.
-   ─────────────────────────────────────────────────────────── */
+/* Aviso "quisiste decir X" */
 .ibot-fuzzy-note {
   font-size: .72rem;
   color: var(--yellow);
@@ -294,10 +261,7 @@
 }
 
 
-/* ── Animación de carga del bot ──────────────────────────────
-   Los tres puntitos que aparecen mientras el bot consulta la API.
-   Cada punto tiene un animation-delay para crear el efecto de ola.
-   ─────────────────────────────────────────────────────────── */
+/* Tres puntitos animados mientras carga */
 .chat-loading {
   display: flex;
   gap: .35rem;
@@ -322,9 +286,7 @@
 }
 
 
-/* ── Responsive del chatbot ──────────────────────────────────
-   En móvil el panel ocupa casi todo el ancho de la pantalla.
-   ─────────────────────────────────────────────────────────── */
+/* Responsive */
 @media (max-width: 768px) {
   #chatbot-panel {
     width: calc(100vw - 2rem);

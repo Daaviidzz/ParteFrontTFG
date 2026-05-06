@@ -1,38 +1,12 @@
-/* ============================================================
-   combate.css — Estilos de la página de combate
-   ============================================================
-
-   Como el combate tiene MUCHOS elementos distintos (arena,
-   barras de PS, caja de diálogo, log, modales...) lo pongo en
-   su propio archivo para no ensuciar components.css ni mezclar
-   estilos de esta página con el resto.
-
-   Sigo usando las variables de variables.css (--red, --blue, etc.)
-   para que si alguien cambia el tema de color, esto se adapte
-   automáticamente.
-
-   Estructura del archivo:
-     1. Sistema de pantallas (screen-active)
-     2. Selector de equipo (pantalla 1)
-     3. Cola de matchmaking (pantalla 2)
-     4. Arena de combate (pantalla 3)
-     5. Botones de movimientos
-     6. Log + dialog box
-     7. Modales de cambio y resultado
-     8. Animaciones propias de esta página
-     9. Responsive
-   ============================================================ */
+/* Pagina de combate: arena, HP bars, dialog box, log y modales */
 
 
-/* ── 1. SISTEMA DE PANTALLAS ────────────────────────────────── */
-/* Solo una pantalla se muestra cada vez. El JS añade .screen-active
-   al <section> que toca y quita la clase de las otras. */
+/* Sistema de pantallas (solo una visible a la vez) */
 
 .screen          { display: none; }
 .screen-active   { display: block; animation: fade-in .35s ease; }
 
 
-/* ── Título y subtítulo ─────────────────────────────────────── */
 .combate-h2 {
   font-family: var(--font-pixel);
   font-size: .75rem;
@@ -47,7 +21,7 @@
 }
 
 
-/* ── 2. PANTALLA DE SELECCIÓN DE EQUIPO ─────────────────────── */
+/* Pantalla 1: seleccion de equipo */
 
 .combate-intro {
   display: flex;
@@ -66,7 +40,7 @@
 }
 
 
-/* Barra superior con los 3 slots del equipo + botones */
+/* Barra superior con los slots del equipo + botones */
 .team-picker-bar {
   display: flex;
   align-items: center;
@@ -103,7 +77,7 @@
   transition: var(--transition);
 }
 
-/* Cuando tiene un Ibermon, cambia de aspecto */
+/* Slot ocupado */
 .team-slot:not(.empty) {
   border-style: solid;
   border-color: var(--blue);
@@ -128,7 +102,7 @@
   white-space: nowrap;
 }
 
-/* Animación de sacudida cuando intentan añadir el 4º */
+/* Sacudida al intentar anyadir un septimo */
 .team-picker-slots.shake { animation: shake .4s ease; }
 
 .team-picker-actions {
@@ -138,8 +112,7 @@
 }
 
 
-/* Tarjetas del selector — reutilizan .ibermon-card de components.css
-   pero añado un estado "picked" con un check verde. */
+/* Picker cards: reutilizan .ibermon-card con estado picked */
 .picker-card {
   position: relative;
 }
@@ -168,8 +141,6 @@
 }
 
 
-/* Grid de Ibermon — reutilizo la clase del catálogo pero la redefino aquí
-   por si el catálogo la cambia en el futuro, que aquí no afecte. */
 .ibermon-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -177,7 +148,7 @@
 }
 
 
-/* ── 3. PANTALLA DE COLA / MATCHMAKING ──────────────────────── */
+/* Pantalla 2: cola de matchmaking */
 
 .queue-box {
   max-width: 520px;
@@ -190,9 +161,7 @@
   box-shadow: var(--shadow-card), 0 0 40px var(--blue-glow);
 }
 
-/* Pokeball girando grande — para que quede vistoso durante la espera.
-   La animación viene de components.css (spin-slow) pero le cambio la
-   duración aquí. */
+/* Pokeball giratoria mientras espera */
 .queue-ball {
   width: 96px;
   height: 96px;
@@ -242,9 +211,8 @@
 }
 
 
-/* ── 4. PANTALLA DE COMBATE: ARENA ──────────────────────────── */
+/* Pantalla 3: arena de combate */
 
-/* Barra con los dos nombres de entrenador */
 .battle-topbar {
   display: flex;
   align-items: center;
@@ -283,9 +251,7 @@
 }
 
 
-/* Arena: la zona "cancha" donde luchan los Ibermon.
-   Fondo con degradado cielo-hierba, decorado con líneas de nube y
-   un círculo en el suelo tipo ring de combate. */
+/* Arena: fondo cielo + hierba + ring circular */
 .arena {
   position: relative;
   height: 340px;
@@ -298,8 +264,7 @@
   overflow: hidden;
 }
 
-/* Líneas de escenario — simula el "ring" circular del combate.
-   Los dos pseudo-elementos son dos óvalos, uno para cada lado. */
+/* Ovalos del "ring" */
 .arena::before,
 .arena::after {
   content: '';
@@ -311,16 +276,11 @@
   background: rgba(0, 0, 0, .15);
 }
 
-.arena::before { /* el del rival (arriba-derecha) */
-  top: 60px; right: -40px;
-}
-
-.arena::after  { /* el del jugador (abajo-izquierda) */
-  bottom: 40px; left: -40px;
-}
+.arena::before { top: 60px; right: -40px; }
+.arena::after  { bottom: 40px; left: -40px; }
 
 
-/* Cajas de información de cada combatiente */
+/* Cajas de cada combatiente */
 .arena-foe,
 .arena-you {
   position: absolute;
@@ -343,7 +303,7 @@
 }
 
 
-/* Caja HP estilo Pokémon */
+/* Caja HP estilo Pokemon */
 .hp-box {
   background: rgba(13, 13, 26, .85);
   border: 2px solid var(--border-b);
@@ -380,7 +340,6 @@
 }
 
 
-/* La barra de PS en sí */
 .hp-bar-wrap {
   display: flex;
   align-items: center;
@@ -410,7 +369,6 @@
   transition: width .6s ease-out, background .3s ease;
 }
 
-/* Colores por % restante */
 .hp-bar-fill.hp-green  { background: var(--green); }
 .hp-bar-fill.hp-yellow { background: var(--yellow); }
 .hp-bar-fill.hp-red    { background: var(--red); }
@@ -424,8 +382,7 @@
 }
 
 
-/* Sprites: el del rival va hacia atrás (ligeramente reducido por
-   perspectiva), el del jugador a "primera persona" más grande. */
+/* Sprites: el rival mas pequenyo, el jugador mas grande */
 .sprite-wrap {
   position: relative;
   display: flex;
@@ -454,23 +411,21 @@
 }
 
 
-/* Animación de daño — flash rojo rápido */
+/* Animaciones de impacto */
 .sprite-wrap.hit-flash img {
   animation: hit-flash .35s ease;
 }
 
-/* Animación de ataque — el sprite se adelanta un poco */
 .sprite-wrap.shake-sprite img {
   animation: shake-hit .35s ease;
 }
 
-/* Cuando el Ibermon cae K.O., el sprite se desvanece cayendo */
 .sprite-wrap.fainted img {
   animation: faint-fall .9s ease forwards;
 }
 
 
-/* Capa donde se muestran los números de daño flotantes */
+/* Capa de numeros de danyo flotantes */
 .arena-overlay {
   position: absolute;
   inset: 0;
@@ -490,14 +445,13 @@
   animation: dmg-float .9s ease forwards;
 }
 
-/* Golpes críticos: más grandes y en amarillo */
 .damage-float.crit {
   color: var(--yellow);
   font-size: 1.35rem;
 }
 
 
-/* ── 5. CAJA DE DIÁLOGO ESTILO GAME BOY ─────────────────────── */
+/* Caja de dialogo estilo Game Boy */
 
 .battle-dialog {
   background: var(--bg-deep);
@@ -513,7 +467,7 @@
   position: relative;
 }
 
-/* Flechita parpadeante en la esquina — guiño a los juegos originales */
+/* Flechita parpadeante */
 .battle-dialog::after {
   content: '▼';
   position: absolute;
@@ -525,7 +479,7 @@
 }
 
 
-/* ── 6. BOTONES DE MOVIMIENTO ───────────────────────────────── */
+/* Botones de movimiento */
 
 .battle-actions {
   display: grid;
@@ -540,8 +494,6 @@
   gap: .5rem;
 }
 
-/* Cada botón de movimiento muestra nombre + tipo + PP.
-   El color del borde cambia según el tipo del movimiento. */
 .move-btn {
   display: flex;
   flex-direction: column;
@@ -550,7 +502,7 @@
   padding: .6rem .8rem;
   background: var(--bg-card);
   border: 2px solid var(--border);
-  border-left-width: 6px;     /* la franja de color del tipo va a la izquierda */
+  border-left-width: 6px;
   border-radius: var(--radius);
   color: var(--text);
   cursor: pointer;
@@ -594,8 +546,7 @@
 }
 
 
-/* Bordes por tipo — tiro de los colores que ya están en components.css
-   pero aplicados al borde izquierdo del botón. */
+/* Borde izquierdo coloreado segun tipo */
 .move-btn.tipo-Fuego       { border-left-color: #ff6b35; }
 .move-btn.tipo-Agua        { border-left-color: #4cc9f0; }
 .move-btn.tipo-Planta      { border-left-color: #06d6a0; }
@@ -623,7 +574,7 @@
 }
 
 
-/* ── 7. LOG DEL COMBATE ─────────────────────────────────────── */
+/* Log del combate */
 
 .battle-log {
   margin-top: 1rem;
@@ -648,7 +599,7 @@
 .log-line:last-child { border-bottom: none; }
 
 
-/* ── 8. MODAL DE CAMBIO ─────────────────────────────────────── */
+/* Modal de cambio de Ibermon */
 
 .switch-list {
   display: flex;
@@ -717,7 +668,7 @@
 }
 
 
-/* ── PANTALLA DE RESULTADO ─────────────────────────────────── */
+/* Pantalla de resultado */
 
 .result-box {
   max-width: 480px;
@@ -745,7 +696,7 @@
 }
 
 
-/* ── 9. ANIMACIONES PROPIAS DE ESTA PÁGINA ─────────────────── */
+/* Animaciones propias */
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
@@ -785,11 +736,10 @@
 }
 
 
-/* ── 10. RESPONSIVE ─────────────────────────────────────────── */
+/* Responsive */
 
 @media (max-width: 768px) {
 
-  /* La arena se hace más cuadrada en móvil para que quepa bien */
   .arena {
     height: 420px;
   }
@@ -808,7 +758,7 @@
   .foe-sprite img { width: 90px; height: 90px; }
   .you-sprite img { width: 110px; height: 110px; }
 
-  /* Los 4 movs pasan a una columna para que no se compriman */
+  /* En movil los movs en una columna */
   .action-moves {
     grid-template-columns: 1fr;
   }
@@ -822,7 +772,6 @@
     justify-content: space-between;
   }
 
-  /* La barra del equipo se apila */
   .team-picker-bar {
     flex-direction: column;
     align-items: stretch;

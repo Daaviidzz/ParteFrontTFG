@@ -1,21 +1,7 @@
-/* ============================================================
-   pages/catalogo.css — Estilos específicos del catálogo
-   ============================================================
-
-   Aquí están los estilos que solo usa catalogo.html:
-   - El layout de dos columnas del modo API (sidebar + main)
-   - La grid de ibermon
-   - El modal de detalle de ibermon (sprite, stats, movimientos)
-
-   Las tabs, el buscador y el JSON viewer ya vienen de components.css
-   ============================================================ */
+/* Catalogo: layout API, grid de Ibermon y modal de detalle */
 
 
-/* ── LAYOUT DEL MODO API ─────────────────────────────────────
-   Cuando el usuario activa el modo "API", la página se divide
-   en dos columnas: el sidebar con los endpoints y el área
-   principal con la respuesta JSON.
-   ─────────────────────────────────────────────────────────── */
+/* Layout del modo API (sidebar + main) */
 .catalog-layout {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -23,10 +9,9 @@
   align-items: start;
 }
 
-/* El sidebar se queda pegado al scroll para que siempre sea accesible */
 .catalog-sidebar {
   position: sticky;
-  top: 80px;  /* deja espacio para el navbar sticky (60px) + un poco más */
+  top: 80px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -45,15 +30,11 @@
   margin-bottom: .5rem;
 }
 
-/* min-width: 0 evita que el contenido desborde el grid */
+/* min-width: 0 evita que el contenido desborde */
 .catalog-main { min-width: 0; }
 
 
-/* ── GRID DE IBERMON ─────────────────────────────────────────
-   auto-fill con minmax para que se ajuste automáticamente
-   al número de columnas posibles según el ancho disponible.
-   No necesito media queries para esto.
-   ─────────────────────────────────────────────────────────── */
+/* Grid de Ibermon (auto-fill por ancho) */
 .ibermon-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -61,12 +42,8 @@
 }
 
 
-/* ── MODAL DE DETALLE IBERMON ────────────────────────────────
-   El modal que aparece al hacer clic en una card de Ibermon.
-   Muestra el sprite grande, los tipos y las estadísticas base.
-   ─────────────────────────────────────────────────────────── */
+/* Modal de detalle */
 
-/* Cabecera del modal con el sprite animado */
 .modal-sprite-wrap {
   text-align: center;
   padding: 1.5rem;
@@ -74,7 +51,7 @@
   border-bottom: 1px solid var(--border);
 }
 
-/* El sprite flota arriba y abajo gracias a la animación "float" de components.css */
+/* Sprite flotante (la animacion float esta en components.css) */
 .modal-sprite {
   width: 128px;
   height: 128px;
@@ -98,7 +75,7 @@
   line-height: 1.6;
 }
 
-/* Grid de 4 datos (catch rate, exp, crecimiento, evolución) */
+/* 4 datos (catch rate, exp, crecimiento, evolucion) */
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -115,7 +92,7 @@
 .detail-item-label { font-size: .7rem; color: var(--text-muted); text-transform: uppercase; }
 .detail-item-val   { font-size: .9rem; font-weight: 700; color: var(--text); }
 
-/* Los movimientos que puede aprender, como pastillas */
+/* Movimientos como pastillas */
 .moves-list {
   display: flex;
   flex-wrap: wrap;
@@ -135,14 +112,10 @@
   align-items: center;
 }
 
-/* El nivel en amarillo para que destaque */
 .move-level { color: var(--yellow); font-weight: 600; }
 
 
-/* ── Responsive del catálogo ─────────────────────────────────
-   En tablet el sidebar deja de ser sticky y pasa a estar arriba.
-   En móvil la grid de ibermon se hace más pequeña.
-   ─────────────────────────────────────────────────────────── */
+/* Responsive */
 @media (max-width: 1024px) {
   .catalog-layout  { grid-template-columns: 1fr; }
   .catalog-sidebar { position: static; max-height: none; }
