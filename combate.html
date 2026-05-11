@@ -24,9 +24,7 @@
 <main class="section-sm">
   <div class="container">
 
-    <!-- La pagina tiene varias pantallas pero todas viven en el mismo HTML.
-         Solo muestro una cada vez cambiando la clase screen-active.
-         Pantallas: screen-select, screen-queue, screen-battle, screen-result. -->
+    <!-- Todas las pantallas viven aqui; el JS cambia screen-active -->
 
     <!-- Pantalla 1: seleccion de equipo de 6 Ibermon. -->
     <section id="screen-select" class="screen screen-active">
@@ -224,9 +222,7 @@
 <div id="footer"></div>
 
 
-<!-- Los modulos se cargan en orden. Primero los basicos (config, api, auth), despues los
-     especificos del combate (motor, matchmaking) y por ultimo la pagina. Si cambio el orden,
-     el script de pagina no encuentra las funciones y todo explota en la consola. -->
+<!-- Orden importante: primero modulos base, luego combate y al final la pagina -->
 <script src="scripts/modules/config.js"></script>
 <script src="scripts/api/api.js"></script>
 <script src="scripts/modules/auth.js"></script>

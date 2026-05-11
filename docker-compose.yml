@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
 
-  # ── Frontend (nginx) ────────────────────────────────────────
+  # Frontend con nginx
   frontend:
     build:
       context: .
@@ -16,7 +14,7 @@ services:
     depends_on:
       - api
 
-  # ── API FastAPI ─────────────────────────────────────────────
+  # API FastAPI
   # (copia de la config del proyecto ApiIbermon para stack completo)
   api:
     image: ibermon_api:latest       # construida desde ApiIbermon/
@@ -37,7 +35,7 @@ services:
     networks:
       - ibermon_network
 
-  # ── MongoDB ─────────────────────────────────────────────────
+  # MongoDB
   mongodb:
     image: mongo:7.0
     container_name: ibermon_mongodb

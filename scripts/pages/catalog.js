@@ -162,7 +162,7 @@ function renderIbermonGrid(list) {
     ${list.map(ib => `
       <div class="ibermon-card" data-num="${ib.numero}">
         <div class="card-num">${formatNum(ib.numero)}</div>
-        ${imgWithFallback(ib.sprite, ib.nombre, 'card-sprite')}
+        ${imgWithFallback(ib, ib.nombre, 'card-sprite')}
         <div class="card-name">${ib.nombre}</div>
         <div class="card-types">
           ${tipoBadge(ib.tipo1)}
@@ -280,7 +280,7 @@ function renderIbermonDetail(ib) {
 
   return `
   <div class="modal-sprite-wrap">
-    ${imgWithFallback(ib.sprite, ib.nombre, 'modal-sprite')}
+    ${imgWithFallback(ib, ib.nombre, 'modal-sprite')}
     <div class="modal-num">${formatNum(ib.numero)}</div>
     <div class="modal-name">${ib.nombre}</div>
     <div class="modal-types">${tipoBadge(ib.tipo1)}${ib.tipo2 ? tipoBadge(ib.tipo2) : ''}</div>

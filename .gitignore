@@ -1,4 +1,4 @@
-# ─── Sistema operativo ─────────────────────────────────────────────────────
+# Sistema operativo
 .DS_Store
 .DS_Store?
 ._*
@@ -8,7 +8,7 @@ Thumbs.db
 ehthumbs.db
 desktop.ini
 
-# ─── Editores e IDEs ────────────────────────────────────────────────────────
+# Editores e IDEs
 .vscode/
 .idea/
 *.suo
@@ -19,29 +19,29 @@ desktop.ini
 *.swp
 *.swo
 
-# ─── Docker ─────────────────────────────────────────────────────────────────
+# Docker
 # No ignorar docker-compose.yml (necesario para despliegue)
 # Sí ignorar overrides locales con credenciales reales
 docker-compose.override.yml
 docker-compose.local.yml
 
-# ─── Variables de entorno (¡nunca subir credenciales!) ──────────────────────
+# Variables de entorno (no subir credenciales)
 .env
 .env.local
 .env.*.local
 *.env
 
-# ─── Logs ───────────────────────────────────────────────────────────────────
+# Logs
 *.log
 logs/
 npm-debug.log*
 
-# ─── Dependencias (si se añadieran herramientas de build en el futuro) ──────
+# Dependencias si algun dia hay build
 node_modules/
 dist/
 build/
 
-# ─── Archivos temporales ────────────────────────────────────────────────────
+# Archivos temporales
 *.tmp
 *.temp
 *.bak

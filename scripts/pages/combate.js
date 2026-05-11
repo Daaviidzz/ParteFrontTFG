@@ -113,7 +113,7 @@ function renderPickerCard(i) {
     <div class="ibermon-card picker-card ${marcada ? 'picked' : ''}" data-num="${i.numero}">
       ${marcada ? '<div class="picker-check">✓</div>' : ''}
       <div class="card-num">${formatNum(i.numero)}</div>
-      ${imgWithFallback(i.sprite, i.nombre, 'card-sprite')}
+      ${imgWithFallback(i, i.nombre, 'card-sprite')}
       <div class="card-name">${i.nombre}</div>
       <div class="card-types">
         ${tipoBadge(i.tipo1)}
@@ -156,7 +156,7 @@ function actualizarSlotsEquipo() {
       const ib = Combate.catalogoIbermon.find(x => x.numero === num);
       el.className = 'team-slot';
       el.innerHTML = `
-        ${imgWithFallback(ib.sprite, ib.nombre, 'slot-sprite')}
+        ${imgWithFallback(ib, ib.nombre, 'slot-sprite')}
         <span class="slot-name">${ib.nombre}</span>`;
     }
   }

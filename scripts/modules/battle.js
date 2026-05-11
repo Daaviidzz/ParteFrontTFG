@@ -24,7 +24,7 @@ const Battle = {
     return {
       numero:  detalle.numero,
       nombre:  detalle.nombre,
-      sprite:  detalle.sprite,
+      sprite:  spriteUrl(detalle),
       tipos:   [detalle.tipo1, detalle.tipo2].filter(Boolean),
       nivel,
       stats,

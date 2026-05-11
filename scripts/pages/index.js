@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     grid.innerHTML = preview.map(ib => `
       <a href="catalogo.html" class="ibermon-card" style="text-decoration:none">
         <div class="card-num">${formatNum(ib.numero)}</div>
-        ${imgWithFallback(ib.sprite, ib.nombre, 'card-sprite')}
+        ${imgWithFallback(ib, ib.nombre, 'card-sprite')}
         <div class="card-name">${ib.nombre}</div>
         <div class="card-types">
           ${tipoBadge(ib.tipo1)}

@@ -1,0 +1,20 @@
+# Git y carpetas locales
+.git
+.gitignore
+.idea
+
+# Overrides y secretos locales
+.env
+.env.*
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Basura de sistema y logs
+.DS_Store
+Thumbs.db
+*.log
+
+# Dependencias/build si aparecen mas adelante
+node_modules
+dist
+build

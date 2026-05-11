@@ -57,7 +57,7 @@ ParteFrontTFG/
 ├── descarga.html       # Guía de descarga paso a paso + FAQ
 ├── combate.html        # Combate online 6vs6 (PvP entre pestañas o CPU)
 │
-├── styles/                       # CSS dividido por responsabilidad (entrada: main.css)
+├── styles/                       # CSS dividido por uso (entrada: main.css)
 │   ├── main.css                  # Solo @imports — orden de carga
 │   ├── variables.css             # CSS custom properties (colores, fuentes, radios)
 │   ├── components.css            # Componentes reutilizables (botones, cards, badges...)
@@ -85,16 +85,13 @@ ParteFrontTFG/
 │       ├── dashboard.js          # Listar/renombrar/eliminar partidas
 │       └── combate.js            # Orquestación UI del combate
 │
-├── docs/
-│   └── documentacion_tecnica.md  # Documentación técnica completa del TFG
-│
 ├── Dockerfile          # nginx:alpine sirviendo el frontend
 ├── nginx.conf          # Sirve estáticos + proxy /api/ → FastAPI
 └── docker-compose.yml  # Stack completo: frontend + api + mongodb
 ```
 
 > **Nota sobre la organización:** el proyecto se reorganizó separando los CSS por
-> responsabilidad y dividiendo los scripts en `api/`, `modules/` y `pages/`. Las
+> tipo de uso y dividiendo los scripts en `api/`, `modules/` y `pages/`. Las
 > carpetas antiguas `css/` y `js/` ya no se usan.
 
 ---
@@ -254,13 +251,13 @@ Detalles funcionales clave:
 Configuración global y funciones utilitarias disponibles en todas las páginas (cargado primero en cada HTML).
 
 ```js
-// ── Configuración ──────────────────────────────────────────────
+// Configuración
 const CONFIG = {
   API_BASE: 'http://localhost:8000',  // cambiar a '/api' con Docker
   GITHUB_URL: 'https://github.com/ibermon',
 };
 
-// ── Funciones de formato ───────────────────────────────────────
+// Funciones de formato
 tipoBadge(tipo)               // → HTML <span class="badge-tipo tipo-Fuego">Fuego</span>
 formatTime(segundos)          // → "2h 34m"  /  "45m 12s"
 formatNum(numero)             // → "#001"
@@ -276,7 +273,7 @@ imgWithFallback(src, alt, cls)// → <img> con SVG placeholder si falla la carga
 Módulo de comunicación con la API REST. Adjunta automáticamente el token JWT (si existe) en el header `Authorization`.
 
 ```js
-// ── Auth ───────────────────────────────────────────────────────
+// Auth
 AuthAPI.login(username, password)
   // POST /auth/login (form-data)
   // → { access_token, token_type }
@@ -289,7 +286,7 @@ AuthAPI.yo()
   // GET /auth/yo  (JWT requerido)
   // → { id, username, email, fecha_registro, partidas }
 
-// ── Catálogo (sin auth) ────────────────────────────────────────
+// Catálogo (sin auth)
 CatalogAPI.ibermon()           // GET /catalogo/ibermon
 CatalogAPI.ibermonById(n)      // GET /catalogo/ibermon/{n}
 CatalogAPI.movimientos()       // GET /catalogo/movimientos
@@ -299,12 +296,12 @@ CatalogAPI.itemById(n)         // GET /catalogo/items/{n}
 CatalogAPI.logros()            // GET /catalogo/logros
 CatalogAPI.logroById(codigo)   // GET /catalogo/logros/{codigo}
 
-// ── Partidas (JWT requerido) ───────────────────────────────────
+// Partidas (JWT requerido)
 PartidaAPI.listar()            // GET    /partidas/
 PartidaAPI.obtener(id)         // GET    /partidas/{id}
 PartidaAPI.eliminar(id)        // DELETE /partidas/{id}
 
-// ── Fetch crudo para el JSON viewer ───────────────────────────
+// Fetch crudo para el JSON viewer
 rawFetch(path)                 // → { ok, status, data, ms }
 ```
 
@@ -320,18 +317,18 @@ La función interna `apiFetch(path, options)` maneja:
 Gestiona el ciclo de vida de la sesión del usuario.
 
 ```js
-// ── Estado de sesión ───────────────────────────────────────────
+// Estado de sesión
 Auth.isLoggedIn()     // → boolean
 Auth.getToken()       // → string JWT | null
 Auth.getUser()        // → { username, email, … } | null
 
-// ── Acciones ───────────────────────────────────────────────────
+// Acciones
 Auth.save(token, user)   // guarda token + user en localStorage
 Auth.logout()            // limpia localStorage y redirige a index.html
 Auth.requireAuth()       // si no hay sesión → redirige a login.html?next=…
 Auth.redirectIfLogged()  // si hay sesión → redirige a dashboard.html
 
-// ── Inicializadores de formulario ──────────────────────────────
+// Inicializadores de formulario
 initLoginForm()          // enlaza el formulario de login.html
 initRegisterForm()       // enlaza el formulario de registro.html
 ```
@@ -567,7 +564,7 @@ escalonado para que parezca un combate real y no un log vomitando texto.
 
 ## Sistema de estilos CSS
 
-El CSS está dividido en `styles/` por responsabilidad. El punto de entrada es
+El CSS está dividido en `styles/` por tipo de uso. El punto de entrada es
 `styles/main.css`, que solo hace `@import` de los demás. Cada HTML solo
 necesita incluir `styles/main.css`.
 
@@ -611,18 +608,18 @@ necesita incluir `styles/main.css`.
 Definidas en `:root` de `styles/variables.css` y disponibles en toda la app:
 
 ```css
-/* ── Fondos ──────────────────────── */
+/* Fondos */
 --bg-deep:    #060610   /* más oscuro, fondos de inputs y code */
 --bg-primary: #0d0d1a   /* fondo base del body */
 --bg-surface: #131326   /* superficie ligeramente elevada */
 --bg-card:    #1a1a2e   /* tarjetas */
 --bg-card-h:  #21213f   /* hover de tarjeta */
 
-/* ── Bordes ──────────────────────── */
+/* Bordes */
 --border:     #2a2a4a   /* borde sutil */
 --border-b:   #4444aa   /* borde destacado (azul) */
 
-/* ── Colores ─────────────────────── */
+/* Colores */
 --red:        #e63946   /* primario (Pokeball, botones, error) */
 --red-dark:   #c1121f
 --blue:       #4cc9f0   /* secundario (stats, links) */
@@ -631,17 +628,17 @@ Definidas en `:root` de `styles/variables.css` y disponibles en toda la app:
 --green:      #06d6a0   /* éxito, stats altos */
 --purple:     #9d4edd   /* acento extra */
 
-/* ── Glows (box-shadow) ──────────── */
+/* Glows */
 --red-glow:    rgba(230,57,70,.35)
 --blue-glow:   rgba(76,201,240,.25)
 --yellow-glow: rgba(249,199,79,.25)
 
-/* ── Texto ───────────────────────── */
+/* Texto */
 --text:       #f1faee   /* texto principal */
 --text-dim:   #8da9c4   /* texto secundario */
 --text-muted: #4d5d80   /* texto deshabilitado */
 
-/* ── Tipografía ──────────────────── */
+/* Tipografia */
 --font-pixel: 'Press Start 2P', monospace   /* títulos y labels */
 --font-main:  'Inter', sans-serif           /* texto general */
 ```
@@ -878,7 +875,7 @@ hacen en el frontend.
 
 ### Arquitectura
 
-| Pieza | Archivo | Responsabilidad |
+| Pieza | Archivo | Función |
 |---|---|---|
 | Motor | `scripts/modules/battle.js` | Cálculo de daño, orden de turno, IA bot |
 | Matchmaking | `scripts/modules/matchmaking.js` | Emparejamiento por `BroadcastChannel` |
@@ -922,9 +919,9 @@ hacen en el frontend.
 
 ## IberBot (chatbot)
 
-**IberBot** es un chatbot de ayuda basado en coincidencia de palabras clave +
-fuzzy matching (algoritmo de Levenshtein). No usa IA ni llamadas externas; toda
-la lógica es local en `scripts/modules/chatbot.js`.
+**IberBot** es un chatbot de ayuda basado primero en coincidencia de palabras clave
+y fuzzy matching (algoritmo de Levenshtein). Cuando no encuentra una respuesta clara,
+manda la pregunta al backend para que este intente responder con lenguaje natural.
 
 ### Motor de respuesta
 

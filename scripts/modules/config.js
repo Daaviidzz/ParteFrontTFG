@@ -81,6 +81,18 @@ function syntaxHighlight(json) {
 
 // Img con fallback SVG si la url falla
 function imgWithFallback(src, alt, className = '') {
-  const fallbackSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='44' fill='%231a1a2e' stroke='%232a2a4a' stroke-width='2'/%3E%3Ctext x='48' y='55' text-anchor='middle' font-size='24' fill='%234d5d80'%3E?%3C/text%3E%3C/svg%3E`;
-  return `<img src="${src}" alt="${alt}" class="${className}" onerror="this.src='${fallbackSvg}'">`;
+  const fallbackSvg = 'data:image/svg+xml,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><circle cx="48" cy="48" r="44" fill="#1a1a2e" stroke="#2a2a4a" stroke-width="2"/><text x="48" y="55" text-anchor="middle" font-size="24" fill="#4d5d80">?</text></svg>`
+  );
+  const url = spriteUrl(src);
+  return `<img src="${url || fallbackSvg}" alt="${alt}" class="${className}" onerror="this.onerror=null;this.src='${fallbackSvg}'">`;
+}
+
+// La API manda sprite_frontal; dejo tambien sprite por compatibilidad
+function spriteUrl(ib, back = false) {
+  if (!ib) return '';
+  if (typeof ib === 'string') return ib;
+  return back
+    ? (ib.sprite_trasero || ib.sprite || ib.sprite_frontal || '')
+    : (ib.sprite_frontal || ib.sprite || '');
 }
