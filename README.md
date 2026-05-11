@@ -254,7 +254,7 @@ Configuración global y funciones utilitarias disponibles en todas las páginas 
 // Configuración
 const CONFIG = {
   API_BASE: 'http://localhost:8000',  // cambiar a '/api' con Docker
-  GITHUB_URL: 'https://github.com/ibermon',
+  GITHUB_URL: 'https://github.com/Daaviidzz/ParteFrontTFG',
 };
 
 // Funciones de formato
@@ -726,8 +726,7 @@ const CONFIG = {
   //    API_BASE: '/api',
 
   // URL del repositorio GitHub del juego
-  // Actualiza esto con la URL real del repositorio
-  GITHUB_URL: 'https://github.com/ibermon',
+  GITHUB_URL: 'https://github.com/Daaviidzz/ParteFrontTFG',
 };
 ```
 

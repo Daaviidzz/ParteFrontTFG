@@ -2,7 +2,7 @@
 
 const CONFIG = {
   API_BASE:   'http://localhost:8000',
-  GITHUB_URL: 'https://github.com/ibermon',
+  GITHUB_URL: 'https://github.com/Daaviidzz/ParteFrontTFG',
 };
 
 
