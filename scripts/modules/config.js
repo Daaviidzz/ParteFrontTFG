@@ -1,7 +1,8 @@
 // Configuracion global y helpers de formato
 
 const CONFIG = {
-  API_BASE:   'http://localhost:8000',
+  // Ruta relativa: nginx hace proxy a la API y evita problemas de CORS
+  API_BASE:   '/api',
   GITHUB_URL: 'https://github.com/Daaviidzz/ParteFrontTFG',
 };
 
@@ -91,8 +92,19 @@ function imgWithFallback(src, alt, className = '') {
 // La API manda sprite_frontal; dejo tambien sprite por compatibilidad
 function spriteUrl(ib, back = false) {
   if (!ib) return '';
-  if (typeof ib === 'string') return ib;
-  return back
-    ? (ib.sprite_trasero || ib.sprite || ib.sprite_frontal || '')
-    : (ib.sprite_frontal || ib.sprite || '');
+
+  // Si ya es un string, lo trato como URL directa
+  const raw = typeof ib === 'string'
+    ? ib
+    : (back
+        ? (ib.sprite_trasero || ib.sprite || ib.sprite_frontal || '')
+        : (ib.sprite_frontal || ib.sprite || ''));
+
+  if (!raw) return '';
+
+  // Rutas absolutas (PokeAPI CDN, etc.) se devuelven tal cual
+  if (/^https?:\/\//i.test(raw)) return raw;
+
+  // Rutas relativas (sprites de iniciales en la API): /api/sprites/...
+  return `${CONFIG.API_BASE}/sprites/${raw}`;
 }
