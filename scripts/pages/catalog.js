@@ -213,13 +213,17 @@ function renderMovimientosTable(list) {
 function renderItemsGrid(list) {
   return `<div class="grid-3" style="gap:1rem">
     ${list.map(item => `
-      <div class="card card-body" style="display:flex;gap:1rem;align-items:flex-start">
-        <div style="font-size:1.75rem;flex-shrink:0">${item.emoji || getItemEmoji(item.categoria)}</div>
+      <div class="card card-body" style="display:flex;gap:1rem;align-items:center">
+        <div style="flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center">
+          ${item.sprite_frontal
+            ? imgWithFallback(item, item.nombre, 'item-sprite')
+            : `<span style="font-size:1.75rem">${item.emoji || getItemEmoji(item.categoria)}</span>`}
+        </div>
         <div>
           <div style="font-family:var(--font-pixel);font-size:.6rem;color:var(--text);margin-bottom:.25rem">${item.nombre}</div>
           <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.5rem">${item.descripcion || ''}</div>
-          ${item.precio_tienda !== undefined
-            ? `<div style="font-size:.75rem;color:var(--yellow);font-weight:700">💰 ${item.precio_tienda} monedas</div>`
+          ${(item.precio_tienda ?? item.precio) !== undefined
+            ? `<div style="font-size:.75rem;color:var(--yellow);font-weight:700">💰 ${item.precio_tienda ?? item.precio} monedas</div>`
             : ''}
         </div>
       </div>`).join('')}
