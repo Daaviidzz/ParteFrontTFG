@@ -1,0 +1,25 @@
+{
+  "name": "partefronttfg",
+  "version": "1.0.0",
+  "description": "Interfaz web del videojuego **Ibermon**, un RPG 2D tipo Pokémon ambientado en la Península Ibérica. Desarrollado como parte del TFG con HTML, CSS y JavaScript puro. Consume la API REST de `ApiIbermon`.",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run --reporter=verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Daaviidzz/ParteFrontTFG.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Daaviidzz/ParteFrontTFG/issues"
+  },
+  "homepage": "https://github.com/Daaviidzz/ParteFrontTFG#readme",
+  "devDependencies": {
+    "happy-dom": "^20.9.0",
+    "vitest": "^4.1.6"
+  }
+}
