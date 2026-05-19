@@ -82,8 +82,6 @@ function buildNav() {
       <div>
         <div class="footer-col-title">Recursos</div>
         <div class="footer-links">
-          <a href="${CONFIG.API_BASE}/docs" target="_blank" rel="noopener" class="footer-link">API Docs</a>
-          <a href="catalogo.html?modo=api" class="footer-link">Explorar API</a>
           <a href="descarga.html#estado-descarga" class="footer-link">Estado del juego</a>
         </div>
       </div>
