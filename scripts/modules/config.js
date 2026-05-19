@@ -105,6 +105,11 @@ function spriteUrl(ib, back = false) {
   // Rutas absolutas (PokeAPI CDN, etc.) se devuelven tal cual
   if (/^https?:\/\//i.test(raw)) return raw;
 
+  // Sprites canonicos de PokeAPI: 1.png, back/1.png, etc.
+  if (/^\d+\.png$/i.test(raw) || /^back\/\d+\.png$/i.test(raw)) {
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${raw}`;
+  }
+
   // Rutas relativas (sprites de iniciales en la API): /api/sprites/...
   return `${CONFIG.API_BASE}/sprites/${raw}`;
 }
