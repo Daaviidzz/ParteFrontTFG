@@ -105,9 +105,15 @@ function spriteUrl(ib, back = false) {
   // Rutas absolutas (PokeAPI CDN, etc.) se devuelven tal cual
   if (/^https?:\/\//i.test(raw)) return raw;
 
-  // Sprites canonicos de PokeAPI: 1.png, back/1.png, etc.
-  if (/^\d+\.png$/i.test(raw) || /^back\/\d+\.png$/i.test(raw)) {
-    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${raw}`;
+  // Sprites canonicos de PokeAPI: uso la version animada BW para recuperar movimiento.
+  if (/^\d+\.png$/i.test(raw)) {
+    const id = raw.replace(/\.png$/i, '');
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`;
+  }
+
+  if (/^back\/\d+\.png$/i.test(raw)) {
+    const id = raw.replace(/^back\//i, '').replace(/\.png$/i, '');
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/back/${id}.gif`;
   }
 
   // Rutas relativas (sprites de iniciales en la API): /api/sprites/...

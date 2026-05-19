@@ -1,4 +1,28 @@
-/* Pagina de descarga: pasos de instalacion */
+/* Pagina de descarga */
+
+.download-header {
+  padding: 2rem 0 2.25rem;
+}
+
+.download-header-inner {
+  max-width: 760px;
+}
+
+.download-actions {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.download-main {
+  padding-top: 3rem;
+}
+
+.download-main > .container > div {
+  max-width: 760px;
+  margin: 0 auto;
+}
 
 
 .step-card {
@@ -44,4 +68,22 @@
   font-size: .85rem;
   color: var(--yellow);
   margin-top: .5rem;
+}
+
+@media (max-width: 640px) {
+  .download-header {
+    padding: 1.5rem 0 1.75rem;
+  }
+
+  .download-actions .btn {
+    width: 100%;
+  }
+
+  .download-main {
+    padding-top: 2rem;
+  }
+
+  .step-card {
+    padding: 1.25rem;
+  }
 }
