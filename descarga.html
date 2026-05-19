@@ -16,11 +16,17 @@
   <div class="container">
     <span class="section-label">Empieza tu aventura</span>
     <h1 class="section-title" style="font-size:1.1rem">Descarga Ibermon</h1>
-    <p class="page-subtitle">Información sobre el estado de la build del juego Unity.</p>
+    <p class="page-subtitle">Descarga la build del juego para Windows o Android.</p>
     <div class="mt-4" style="display:flex;gap:1rem;flex-wrap:wrap">
-      <a href="#estado-descarga"
+      <a href="https://github.com/Daaviidzz/ParteFrontTFG/releases/latest/download/Ibermon-Windows.zip"
+         target="_blank" rel="noopener"
          class="btn btn-primary btn-lg btn-pixel">
-        ⬇ Estado de descarga
+        ⬇ Windows
+      </a>
+      <a href="https://github.com/Daaviidzz/ParteFrontTFG/releases/latest/download/Ibermon-Android.apk"
+         target="_blank" rel="noopener"
+         class="btn btn-ghost btn-lg">
+        🤖 Android
       </a>
       <a href="catalogo.html" class="btn btn-ghost btn-lg">
         🃏 Explorar Catálogo
@@ -67,9 +73,9 @@
       </div>
 
 
-      <!-- Estado de descarga -->
+      <!-- Descargas -->
       <h2 style="font-family:var(--font-pixel);font-size:.7rem;color:var(--text);margin-bottom:1.5rem">
-        Estado de descarga
+        Descargas disponibles
       </h2>
 
       <div id="estado-descarga" style="display:flex;flex-direction:column;gap:1rem">
@@ -77,29 +83,37 @@
         <div class="step-card">
           <div class="step-num">1</div>
           <div class="step-content">
-            <div class="step-title">Proyecto Unity en Plastic SCM</div>
+            <div class="step-title">Descargar para Windows</div>
             <p class="step-desc">
-              El juego de Unity no está publicado en GitHub. El equipo lo gestiona en Plastic SCM durante el desarrollo.
+              Descarga el ZIP de Windows, extrae la carpeta completa y ejecuta <code class="step-code">Ibermon.exe</code>.
             </p>
+            <a href="https://github.com/Daaviidzz/ParteFrontTFG/releases/latest/download/Ibermon-Windows.zip"
+               target="_blank" rel="noopener" class="btn btn-ghost btn-sm mt-2">
+              ⬇ Descargar Windows
+            </a>
           </div>
         </div>
 
         <div class="step-card">
           <div class="step-num">2</div>
           <div class="step-content">
-            <div class="step-title">Build pendiente de publicar</div>
+            <div class="step-title">Descargar para Android</div>
             <p class="step-desc">
-              Cuando haya una versión exportada del juego, se añadirá aquí el enlace de descarga del ZIP.
+              Descarga el APK e instálalo en un dispositivo Android. Puede que tengas que permitir instalaciones desde el navegador.
             </p>
+            <a href="https://github.com/Daaviidzz/ParteFrontTFG/releases/latest/download/Ibermon-Android.apk"
+               target="_blank" rel="noopener" class="btn btn-ghost btn-sm mt-2">
+              🤖 Descargar Android
+            </a>
           </div>
         </div>
 
         <div class="step-card">
           <div class="step-num">3</div>
           <div class="step-content">
-            <div class="step-title">Extraer el ZIP</div>
+            <div class="step-title">Mantener los archivos juntos</div>
             <p class="step-desc">
-              Cuando el ZIP esté disponible, habrá que extraerlo en una carpeta y mantener la estructura interna de archivos.
+              En Windows no muevas solo el ejecutable. Debe quedarse junto a <code class="step-code">Ibermon_Data</code> y el resto de archivos.
             </p>
           </div>
         </div>
@@ -109,7 +123,7 @@
           <div class="step-content">
             <div class="step-title">Conexión con la API</div>
             <p class="step-desc">
-              La versión final del juego se conectará a la API oficial para login, partidas, catálogo y datos de jugador.
+              El juego se conecta a la API oficial para login, partidas, catálogo y datos de jugador.
             </p>
           </div>
         </div>
@@ -117,13 +131,12 @@
         <div class="step-card">
           <div class="step-num">5</div>
           <div class="step-content">
-            <div class="step-title">Ejecutar el juego</div>
+            <div class="step-title">Jugar</div>
             <p class="step-desc">
-              En Windows, la build tendrá un ejecutable del juego cuando esté publicada.
               En tu primera partida podrás elegir personaje y Ibermon inicial.
             </p>
             <div class="alert alert-success mt-2" style="font-size:.82rem">
-              ✅ Mientras tanto, puedes explorar el catálogo y probar la API desde esta web.
+              ✅ Registra tu cuenta en esta web para ver tus partidas en el dashboard.
             </div>
           </div>
         </div>
@@ -175,7 +188,7 @@
               ¿Puedo contribuir al proyecto? <span>+</span>
             </summary>
             <p style="font-size:.875rem;color:var(--text-dim);margin-top:.75rem">
-              El desarrollo del juego se gestiona en Plastic SCM por el equipo. La web y la API sí tienen repositorios separados.
+              El desarrollo del juego se gestiona en Plastic SCM por el equipo. La web, la API y las builds publicadas tienen repositorios separados.
             </p>
           </details>
         </div>

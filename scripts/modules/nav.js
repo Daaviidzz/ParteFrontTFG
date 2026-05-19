@@ -82,7 +82,7 @@ function buildNav() {
       <div>
         <div class="footer-col-title">Recursos</div>
         <div class="footer-links">
-          <a href="descarga.html#estado-descarga" class="footer-link">Estado del juego</a>
+          <a href="descarga.html#estado-descarga" class="footer-link">Descargas</a>
         </div>
       </div>
     </div>
