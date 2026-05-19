@@ -9,7 +9,7 @@ services:
     container_name: ibermon_frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "25014:80"
     networks:
       - ibermon_network
 
@@ -17,4 +17,4 @@ networks:
   # Red ya creada por docker-compose de ApiIbermon
   ibermon_network:
     external: true
-    name: apiibermon_ibermon_network
+    name: ibermon-api_ibermon_network
