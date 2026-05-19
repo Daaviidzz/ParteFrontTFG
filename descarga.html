@@ -16,12 +16,11 @@
   <div class="container">
     <span class="section-label">Empieza tu aventura</span>
     <h1 class="section-title" style="font-size:1.1rem">Descarga Ibermon</h1>
-    <p class="page-subtitle">Sigue los pasos para instalar y jugar al RPG ibérico.</p>
+    <p class="page-subtitle">Información sobre el estado de la build del juego Unity.</p>
     <div class="mt-4" style="display:flex;gap:1rem;flex-wrap:wrap">
-      <!-- El href lo rellena el script de abajo con CONFIG.GITHUB_URL -->
-      <a href="#" target="_blank" rel="noopener" id="githubBtn"
+      <a href="#estado-descarga"
          class="btn btn-primary btn-lg btn-pixel">
-        ⬇ Ver en GitHub
+        ⬇ Estado de descarga
       </a>
       <a href="catalogo.html" class="btn btn-ghost btn-lg">
         🃏 Explorar Catálogo
@@ -68,34 +67,29 @@
       </div>
 
 
-      <!-- Pasos de instalacion -->
+      <!-- Estado de descarga -->
       <h2 style="font-family:var(--font-pixel);font-size:.7rem;color:var(--text);margin-bottom:1.5rem">
-        Pasos de instalación
+        Estado de descarga
       </h2>
 
-      <div style="display:flex;flex-direction:column;gap:1rem">
+      <div id="estado-descarga" style="display:flex;flex-direction:column;gap:1rem">
 
         <div class="step-card">
           <div class="step-num">1</div>
           <div class="step-content">
-            <div class="step-title">Ir al repositorio de GitHub</div>
+            <div class="step-title">Proyecto Unity en Plastic SCM</div>
             <p class="step-desc">
-              Accede al repositorio oficial del proyecto en GitHub donde encontrarás el código fuente y los releases compilados del juego.
+              El juego de Unity no está publicado en GitHub. El equipo lo gestiona en Plastic SCM durante el desarrollo.
             </p>
-            <!-- El href lo rellena el script de abajo -->
-            <a id="step1Link" href="#" target="_blank" rel="noopener" class="btn btn-ghost btn-sm mt-2">
-              🔗 Abrir GitHub →
-            </a>
           </div>
         </div>
 
         <div class="step-card">
           <div class="step-num">2</div>
           <div class="step-content">
-            <div class="step-title">Descargar el release</div>
+            <div class="step-title">Build pendiente de publicar</div>
             <p class="step-desc">
-              En la sección <strong>Releases</strong> del repositorio, descarga la versión más reciente del juego para tu sistema operativo.
-              El archivo vendrá comprimido en <code class="step-code">.zip</code>.
+              Cuando haya una versión exportada del juego, se añadirá aquí el enlace de descarga del ZIP.
             </p>
           </div>
         </div>
@@ -103,9 +97,9 @@
         <div class="step-card">
           <div class="step-num">3</div>
           <div class="step-content">
-            <div class="step-title">Extraer el archivo</div>
+            <div class="step-title">Extraer el ZIP</div>
             <p class="step-desc">
-              Extrae el contenido del ZIP en una carpeta de tu elección. No muevas los archivos internos, deben permanecer en la misma estructura de carpetas.
+              Cuando el ZIP esté disponible, habrá que extraerlo en una carpeta y mantener la estructura interna de archivos.
             </p>
           </div>
         </div>
@@ -113,13 +107,9 @@
         <div class="step-card">
           <div class="step-num">4</div>
           <div class="step-content">
-            <div class="step-title">Configurar la API (opcional)</div>
+            <div class="step-title">Conexión con la API</div>
             <p class="step-desc">
-              Para el guardado en la nube necesitas tener la API corriendo. Puedes usar Docker:
-            </p>
-            <code class="step-code">docker-compose up -d</code>
-            <p class="step-desc mt-2">
-              O conectarte al servidor oficial si está disponible. Sin API, el juego funciona solo en modo local.
+              La versión final del juego se conectará a la API oficial para login, partidas, catálogo y datos de jugador.
             </p>
           </div>
         </div>
@@ -127,13 +117,13 @@
         <div class="step-card">
           <div class="step-num">5</div>
           <div class="step-content">
-            <div class="step-title">¡Ejecutar el juego!</div>
+            <div class="step-title">Ejecutar el juego</div>
             <p class="step-desc">
-              Abre el ejecutable <code class="step-code">Ibermon.exe</code> (Windows) o el equivalente en tu sistema.
+              En Windows, la build tendrá un ejecutable del juego cuando esté publicada.
               En tu primera partida podrás elegir personaje y Ibermon inicial.
             </p>
             <div class="alert alert-success mt-2" style="font-size:.82rem">
-              ✅ ¡Listo! Registra tu cuenta en esta web para ver tus partidas en el dashboard.
+              ✅ Mientras tanto, puedes explorar el catálogo y probar la API desde esta web.
             </div>
           </div>
         </div>
@@ -185,7 +175,7 @@
               ¿Puedo contribuir al proyecto? <span>+</span>
             </summary>
             <p style="font-size:.875rem;color:var(--text-dim);margin-top:.75rem">
-              ¡Claro! El código está en GitHub. Puedes abrir issues, proponer features o hacer pull requests.
+              El desarrollo del juego se gestiona en Plastic SCM por el equipo. La web y la API sí tienen repositorios separados.
             </p>
           </details>
         </div>
@@ -203,15 +193,6 @@
 <script src="scripts/modules/auth.js"></script>
 <script src="scripts/modules/nav.js"></script>
 <script src="scripts/modules/chatbot.js"></script>
-<script>
-  // El único JS específico de esta página es poner la URL de GitHub
-  // en los botones. Son 3 líneas, no merece un archivo propio.
-  document.addEventListener('DOMContentLoaded', () => {
-    const githubUrl = CONFIG.GITHUB_URL || '#';
-    document.getElementById('githubBtn').href  = githubUrl;
-    document.getElementById('step1Link').href  = githubUrl;
-  });
-</script>
 
 </body>
 </html>
